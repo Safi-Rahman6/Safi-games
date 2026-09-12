@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  
+  <!-- MRMND অ্যাড স্ক্রিপ্ট -->
+  <script async src="https://ss.mrmnd.com/banner.js"></script>
+  <script async src="https://ss.mrmnd.com/interstitial.js" data-mndintid="8e65b966-803b-4cc5-b44f-5ab008373d82"></script>
+  
+  <title>Game Portal · Arcade</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background: #0b0d15; min-height: 100vh; display: flex; justify-content: center; padding: 1rem; background-image: radial-gradient(circle at 20% 30%, #1b1f3a 0%, #0a0c14 90%); }
+    #app { max-width: 1400px; width: 100%; }
+    .glass-card { background: rgba(20, 25, 45, 0.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 2rem; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8); transition: all 0.2s ease; }
+    
+    /* Header */
+    .portal-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 1.2rem 2rem; margin-bottom: 2rem; gap: 1rem; }
+    .logo h1 { font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #a78bfa, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.5px; }
+    
+    /* Search Bar - Desktop */
+    .search-wrap { display: flex; align-items: center; background: rgba(0, 0, 0, 0.4); border-radius: 3rem; padding: 0.2rem 1rem 0.2rem 1.5rem; border: 1px solid rgba(255, 255, 255, 0.08); flex: 1 1 280px; max-width: 400px; }
+    .search-wrap i { color: #94a3b8; font-size: 1rem; }
+    .search-wrap input { background: transparent; border: none; padding: 0.8rem 0.8rem; color: #f1f5f9; font-size: 1rem; width: 100%; outline: none; }
+    .search-wrap input::placeholder { color: #64748b; }
+    
+    .user-stats { display: flex; gap: 1.5rem; align-items: center; background: rgba(0,0,0,0.3); padding: 0.3rem 1.5rem; border-radius: 3rem; border: 1px solid rgba(255,255,255,0.05); }
+    .user-stats span { color: #cbd5e1; font-size: 0.85rem; }
+    .user-stats .xp { color: #a78bfa; font-weight: 600; }
+    .user-stats .level { color: #facc15; font-weight: 600; }
+    .favorites-badge { background: rgba(168, 85, 247, 0.2); padding: 0.4rem 1.2rem; border-radius: 3rem; color: #c4b5fd; font-size: 0.9rem; font-weight: 500; white-space: nowrap; border: 1px solid rgba(168, 85, 247, 0.2); cursor: default; }
+    
+    .category-strip { display: flex; flex-wrap: wrap; gap: 0.6rem; padding: 0.5rem 0.2rem 1.5rem 0.2rem; }
+    .category-btn { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); color: #cbd5e1; padding: 0.5rem 1.4rem; border-radius: 3rem; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); background: rgba(15, 20, 35, 0.5); }
+    .category-btn:hover { background: rgba(168, 85, 247, 0.2); border-color: #7c3aed; color: #fff; }
+    .category-btn.active { background: #7c3aed; border-color: #7c3aed; color: white; box-shadow: 0 0 16px #7c3aed66; }
+    
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.8rem; margin: 2rem 0 3rem 0; }
+    .game-card { background: rgba(16, 20, 38, 0.6); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 1.8rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.04); transition: transform 0.2s ease, box-shadow 0.3s; box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.6); cursor: pointer; display: flex; flex-direction: column; }
+    .game-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px #1e1b4b; border-color: #4f46e5; }
+    .card-thumb { position: relative; width: 100%; aspect-ratio: 16 / 10; background: #12172b; overflow: hidden; }
+    .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: 0.2s; background: #1a1f33; }
+    .card-thumb .play-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.25s; }
+    .game-card:hover .play-overlay { opacity: 1; }
+    .play-overlay i { font-size: 2.8rem; color: white; background: #7c3aedcc; padding: 0.8rem 1.2rem; border-radius: 4rem; backdrop-filter: blur(4px); box-shadow: 0 0 30px #7c3aed88; }
+    .card-body { padding: 0.9rem 1.2rem 1.2rem 1.2rem; display: flex; flex-direction: column; gap: 0.3rem; }
+    .card-title { color: #f1f5f9; font-weight: 600; font-size: 1rem; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { display: flex; justify-content: space-between; align-items: center; }
+    .card-category { font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; background: rgba(255, 255, 255, 0.04); padding: 0.2rem 0.8rem; border-radius: 2rem; letter-spacing: 0.4px; }
+    .fav-btn { background: transparent; border: none; color: #64748b; font-size: 1.4rem; cursor: pointer; transition: 0.15s; padding: 0.2rem; }
+    .fav-btn.active { color: #f472b6; text-shadow: 0 0 12px #f472b680; }
+    .fav-btn:hover { transform: scale(1.1); }
+    
+    .recent-section { margin: 2.5rem 0 1.5rem 0; }
+    .section-title { color: #e2e8f0; font-weight: 500; font-size: 1.2rem; letter-spacing: -0.3px; display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem; }
+    .recent-strip { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+    .recent-chip { background: rgba(30, 35, 60, 0.7); backdrop-filter: blur(4px); padding: 0.5rem 1.5rem 0.5rem 1.2rem; border-radius: 3rem; border: 1px solid rgba(255, 255, 255, 0.04); color: #cbd5e1; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: 0.15s; }
+    .recent-chip i { color: #7c3aed; font-size: 0.7rem; }
+    .recent-chip:hover { background: #2d2f4e; border-color: #4f46e5; }
+    
+    .game-page { display: none; flex-direction: column; gap: 1.5rem; margin-top: 0.5rem; }
+    .game-page.active { display: flex; }
+    .iframe-wrapper { position: relative; width: 100%; background: #05070e; border-radius: 2.2rem; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.04); box-shadow: 0 30px 60px -20px #000000cc; }
+    .iframe-wrapper iframe { width: 100%; height: 75vh; min-height: 400px; border: none; display: block; background: #0b0d15; }
+    .game-page-controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; }
+    .ctrl-group { display: flex; gap: 0.8rem; align-items: center; }
+    .ctrl-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 3rem; font-weight: 500; font-size: 0.9rem; backdrop-filter: blur(4px); cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; gap: 0.6rem; }
+    .ctrl-btn:hover { background: #2d2f4e; border-color: #7c3aed; }
+    .ctrl-btn.primary { background: #7c3aed; border-color: #7c3aed; color: white; }
+    .ctrl-btn.primary:hover { background: #6d28d9; }
+    
+    .loading-spinner { display: flex; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 20; }
+    .spinner { width: 3rem; height: 3rem; border: 4px solid #2d2f4e; border-top: 4px solid #a78bfa; border-radius: 50%; animation: spin 0.9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.8); border-radius: 2.2rem; z-index: 30; }
+    .error-placeholder i { font-size: 2.5rem; color: #f87171; }
+    
+    .hidden { display: none !important; }
+    .mt-1 { margin-top: 0.5rem; }
+    
+    .ad-container { margin: 1rem 0; text-align: center; min-height: 50px; }
+    .ad-sticky { position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; background: rgba(0,0,0,0.9); padding: 0.5rem; display: none; text-align: center; }
+    
+    /* MRMND অ্যাড ডিভ কন্টেইনার */
+    .mrmnd-ad { display: flex; justify-content: center; align-items: center; margin: 0.5rem 0; }
+    
+    /* ===== মোবাইল ডিভাইসের জন্য স্পেশাল ফিক্স ===== */
+    @media (max-width: 640px) {
+      .portal-header { 
+        flex-direction: column; 
+        align-items: stretch; 
+        padding: 0.7rem 1rem; 
+        gap: 0.7rem;
+      }
+      
+      .logo h1 { font-size: 1.3rem; }
+      
+      .search-wrap { 
+        max-width: 100%; 
+        padding: 0.1rem 0.8rem 0.1rem 1rem;
+        flex: 1 1 auto;
+        border-radius: 2rem;
+      }
+      
+      .search-wrap input { 
+        padding: 0.5rem 0.5rem;
+        font-size: 0.9rem;
+        min-height: 38px;
+      }
+      
+      .search-wrap i {
+        font-size: 0.8rem;
+      }
+      
+      .user-stats { 
+        padding: 0.2rem 0.8rem; 
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 2rem;
+      }
+      
+      .user-stats span { font-size: 0.75rem; }
+      
+      .favorites-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.8rem;
+        border-radius: 2rem;
+      }
+      
+      .game-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+        gap: 1rem; 
+      }
+      
+      .iframe-wrapper iframe { 
+        height: 55vh; 
+        min-height: 250px; 
+      }
+      
+      .category-btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.75rem;
+      }
+      
+      .ctrl-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+    }
+    
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0d15; }
+    ::-webkit-scrollbar-thumb { background: #3b3f66; border-radius: 20px; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- ===== হেডার ===== -->
+  <header class="portal-header glass-card" id="mainHeader">
+    <div class="logo"><h1 id="siteTitle"><i class="fas fa-gamepad" style="color:#a78bfa; margin-right: 8px;"></i>Portal</h1></div>
+    <div class="search-wrap">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Search games...">
+    </div>
+    <div style="display:flex; gap:0.8rem; align-items:center; flex-wrap:wrap;">
+      <div class="user-stats" id="userStats">
+        <span>⭐ <span class="xp" id="userXp">0</span> XP</span>
+        <span>🎯 Level <span class="level" id="userLevel">1</span></span>
+      </div>
+      <div class="favorites-badge"><i class="fas fa-heart" style="color:#f472b6; margin-right: 4px;"></i><span id="favCount">0</span></div>
+    </div>
+  </header>
+
+  <!-- ===== MRMND ব্যানার অ্যাড (হেডারের নিচে) ===== -->
+  <div class="mrmnd-ad" data-mndbanid="44343f5e-853a-41d9-af2d-fb4da68c8f11"></div>
+  <div class="mrmnd-ad" data-mndbanid="a347fec5-d6b8-4225-b37c-3b9c22312e73"></div>
+  <div class="mrmnd-ad" data-mndbanid="4569de7f-5e84-44a7-84fc-2c277c95328d"></div>
+
+  <!-- ===== ক্যাটাগরি ===== -->
+  <div class="category-strip" id="categoryContainer">
+    <button class="category-btn active" data-category="all">All</button>
+    <button class="category-btn" data-category="Action">Action</button>
+    <button class="category-btn" data-category="Racing">Racing</button>
+    <button class="category-btn" data-category="Puzzle">Puzzle</button>
+    <button class="category-btn" data-category="Arcade">Arcade</button>
+    <button class="category-btn" data-category="Shooting">Shooting</button>
+    <button class="category-btn" data-category="Sports">Sports</button>
+  </div>
+
+  <!-- ===== হোমপেজ ===== -->
+  <div id="homepage">
+    <div class="game-grid" id="gameGrid"></div>
+    
+    <div class="recent-section" id="recentSection">
+      <div class="section-title"><i class="fas fa-clock" style="color:#7c3aed;"></i> Recently played</div>
+      <div class="recent-strip" id="recentStrip"></div>
+    </div>
+  </div>
+
+  <!-- ===== গেম পেজ ===== -->
+  <div class="game-page" id="gamePage">
+    <div class="game-page-controls">
+      <div class="ctrl-group">
+        <button class="ctrl-btn" id="backHomeBtn"><i class="fas fa-arrow-left"></i> Back</button>
+        <span id="gamePageTitle" style="color:#e2e8f0; font-weight:500; font-size:1.1rem;">Game</span>
+      </div>
+      <div class="ctrl-group">
+        <button class="ctrl-btn primary" id="fullscreenBtn"><i class="fas fa-expand"></i> Fullscreen</button>
+      </div>
+    </div>
+    <div class="iframe-wrapper">
+      <div id="loadingIndicator" class="loading-spinner hidden"><div class="spinner"></div></div>
+      <iframe id="gameIframe" src="" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+      <div id="iframeError" class="error-placeholder hidden">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p style="margin-top: 1rem;">Oops! The game couldn't load.<br>Please try again later.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MRMND ব্যানার অ্যাড (ফুটারের আগে) ===== -->
+  <div class="mrmnd-ad" data-mndbanid="e62ba46e-dc98-4654-bd28-c898ad0a1a29"></div>
+  <div class="mrmnd-ad" data-mndbanid="03107768-a769-418b-9e1e-dcec8361b5b4"></div>
+  <div class="mrmnd-ad" data-mndbanid="93b17666-9b93-43b4-a457-6cdf25704f43"></div>
+  <div class="mrmnd-ad" data-mndbanid="4ee6afe7-9407-4e7d-b33a-7535d3ed5cbb"></div>
+
+  <!-- ===== অ্যাড কন্টেইনার (Supabase থেকে ইনজেক্টের জন্য) ===== -->
+  <div id="adBannerTop" class="ad-container"></div>
+  <div id="adBannerBottom" class="ad-container"></div>
+  <div id="adNative" class="ad-container"></div>
+  <div id="adSticky" class="ad-sticky"></div>
+</div>
+
+<script>
+  (function() {
+    const SUPABASE_URL = 'https://gsckwfvlvrxbplekeqhn.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdzY2t3ZnZsdnJ4YnBsZWtlcWhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2NTc1MjQsImV4cCI6MjEwMTIzMzUyNH0.Xi1EEEQLcrbNszk5Xk1RTieDb_L1ZLRoacYD7u8Slus';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentCategory = 'all';
+    let searchTerm = '';
+    let games = [];
+    let favorites = [];
+    let recent = [];
+    let currentGameId = null;
+    let userId = null;
+    let userData = null;
+    let settings = {};
+    let popupLoaded = false;
+
+    const grid = document.getElementById('gameGrid');
+    const searchInput = document.getElementById('searchInput');
+    const catBtns = document.querySelectorAll('.category-btn');
+    const favCount = document.getElementById('favCount');
+    const recentStrip = document.getElementById('recentStrip');
+    const homepage = document.getElementById('homepage');
+    const gamePage = document.getElementById('gamePage');
+    const gameIframe = document.getElementById('gameIframe');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const iframeError = document.getElementById('iframeError');
+    const gamePageTitle = document.getElementById('gamePageTitle');
+    const backHomeBtn = document.getElementById('backHomeBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const siteTitle = document.getElementById('siteTitle');
+    const userXp = document.getElementById('userXp');
+    const userLevel = document.getElementById('userLevel');
+
+    function updateUserStats() {
+      if (userData) {
+        userXp.textContent = userData.xp || 0;
+        userLevel.textContent = userData.level || 1;
+      }
+    }
+
+    function updateFavCount() {
+      favCount.textContent = favorites.length;
+    }
+
+    // ============================================
+    // ইউজার ম্যানেজমেন্ট
+    // ============================================
+    async function getOrCreateUser() {
+      let anonId = localStorage.getItem('game_anon_id');
+      if (!anonId) {
+        anonId = crypto.randomUUID ? crypto.randomUUID() : 'anon_' + Date.now() + '_' + Math.random().toString(36);
+        localStorage.setItem('game_anon_id', anonId);
+      }
+
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('anonymous_id', anonId)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error fetching user:', error);
+        return createNewUser(anonId);
+      }
+
+      if (data) {
+        userId = data.id;
+        userData = data;
+        const updates = {
+          last_visit: new Date().toISOString(),
+          total_visits: data.total_visits + 1
+        };
+        await supabase.from('users').update(updates).eq('id', userId);
+        favorites = data.favorites || [];
+        recent = data.recently_played || [];
+        updateFavCount();
+        updateUserStats();
+        renderRecent();
+        return data;
+      } else {
+        return createNewUser(anonId);
+      }
+    }
+
+    async function createNewUser(anonId) {
+      const info = await gatherUserInfo();
+      const newUser = {
+        anonymous_id: anonId,
+        ip_address: info.ip || null,
+        country: info.country || null,
+        device: info.device || null,
+        browser: info.browser || null,
+        os: info.os || null,
+        language: info.language || null,
+        first_visit: new Date().toISOString(),
+        last_visit: new Date().toISOString(),
+        total_visits: 1,
+        favorites: [],
+        recently_played: [],
+        xp: 0,
+        level: 1,
+        achievements: [],
+        play_count: 0
+      };
+      const { data, error } = await supabase.from('users').insert(newUser).select().single();
+      if (error) {
+        console.error('Error creating user:', error);
+        userId = null;
+        userData = null;
+        favorites = [];
+        recent = [];
+        return null;
+      }
+      userId = data.id;
+      userData = data;
+      favorites = data.favorites || [];
+      recent = data.recently_played || [];
+      updateFavCount();
+      updateUserStats();
+      renderRecent();
+      return data;
+    }
+
+    async function gatherUserInfo() {
+      const info = {};
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        info.ip = data.ip;
+        info.country = data.country_name;
+      } catch (e) {}
+      info.device = /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
+      info.browser = navigator.userAgent.match(/(firefox|chrome|safari|edg)/i)?.[0] || 'Unknown';
+      info.os = navigator.platform || 'Unknown';
+      info.language = navigator.language || 'en-US';
+      return info;
+    }
+
+    async function syncUserData(updates) {
+      if (!userId) return;
+      const { error } = await supabase.from('users').update(updates).eq('id', userId);
+      if (error) console.error('Sync error:', error);
+    }
+
+    // ============================================
+    // ডাটা ফেচ
+    // ============================================
+    async function fetchGames() {
+      const { data, error } = await supabase.from('games').select('*').order('title');
+      if (error) {
+        console.error('Error fetching games:', error);
+        return [];
+      }
+      return data;
+    }
+
+    async function fetchSettings() {
+      const { data, error } = await supabase.from('settings').select('*').eq('id', 1).maybeSingle();
+      if (error) {
+        console.error('Error fetching settings:', error);
+        return {};
+      }
+      return data || {};
+    }
+
+    async function fetchAds() {
+      const { data, error } = await supabase.from('advertisements').select('*').eq('enabled', true);
+      if (error) {
+        console.error('Error fetching ads:', error);
+        return [];
+      }
+      return data;
+    }
+
+    // ============================================
+    // MRMND অ্যাড ইনজেকশন (স্পেশাল)
+    // ============================================
+    function injectMRMNDAds() {
+      // MRMND ব্যানার অ্যাড গুলো রেন্ডার করুন
+      const mrmndDivs = document.querySelectorAll('[data-mndbanid]');
+      mrmndDivs.forEach(div => {
+        // MRMND স্ক্রিপ্ট স্বয়ংক্রিয়ভাবে এই ডিভিগুলোতে অ্যাড রেন্ডার করবে
+        // শুধু নিশ্চিত করুন যে ডিভিগুলো visible আছে
+        div.style.display = 'block';
+      });
+    }
+
+    // ============================================
+    // অ্যাড ইনজেকশন (Supabase থেকে)
+    // ============================================
+    function injectAds(ads) {
+      // ক্লিয়ার করুন
+      document.getElementById('adBannerTop').innerHTML = '';
+      document.getElementById('adBannerBottom').innerHTML = '';
+      document.getElementById('adNative').innerHTML = '';
+      document.getElementById('adSticky').style.display = 'none';
+
+      ads.forEach(ad => {
+        if (ad.type === 'sticky') {
+          const container = document.getElementById('adSticky');
+          container.style.display = 'block';
+          container.innerHTML = ad.code;
+        } 
+        else if (ad.type === 'banner') {
+          const id = ad.position === 'top' ? 'adBannerTop' : 'adBannerBottom';
+          document.getElementById(id).innerHTML = ad.code;
+          
+          // MRMND ডিসপ্লে অ্যাড ডিটেক্ট করে রেন্ডার
+          if (ad.code.includes('mrmnd') || ad.code.includes('061aa906')) {
+            setTimeout(() => {
+              const container = document.getElementById(id);
+              const scriptTags = container.querySelectorAll('script');
+              scriptTags.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                newScript.async = true;
+                newScript.src = oldScript.src;
+                if (oldScript.dataset) {
+                  Object.keys(oldScript.dataset).forEach(key => {
+                    newScript.dataset[key] = oldScript.dataset[key];
+                  });
+                }
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+              });
+            }, 100);
+          }
+        } 
+        else if (ad.type === 'native') {
+          document.getElementById('adNative').innerHTML = ad.code;
+        } 
+        else if (ad.type === 'popup') {
+          if (!popupLoaded) {
+            loadPopupAd(ad.code);
+            popupLoaded = true;
+          }
+        }
+      });
+    }
+
+    // পপআন্ডার অ্যাড লোডার
+    function loadPopupAd(code) {
+      if (document.querySelector('script[data-mndpopid]')) {
+        return;
+      }
+      
+      const scriptMatch = code.match(/<script[^>]*src=["']([^"']*)["'][^>]*data-mndpopid=["']([^"']*)["'][^>]*><\/script>/);
+      if (scriptMatch) {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = scriptMatch[1];
+        script.setAttribute('data-mndpopid', scriptMatch[2]);
+        document.head.appendChild(script);
+        console.log('✅ Popunder ad loaded');
+      }
+    }
+
+    // ============================================
+    // রেন্ডার ফাংশন
+    // ============================================
+    function renderGrid() {
+      const filtered = games.filter(game => {
+        const matchCategory = currentCategory === 'all' || game.category === currentCategory;
+        const matchSearch = game.title.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchCategory && matchSearch && game.status !== 'hidden';
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding:3rem;">No games found 🎮</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(game => {
+        const isFav = favorites.includes(game.id);
+        return `
+          <div class="game-card" data-id="${game.id}">
+            <div class="card-thumb">
+              <img src="${game.thumbnail || 'https://placehold.co/400x250/1a1f33/7c3aed?text=No+Image'}" alt="${game.title}" loading="lazy">
+              <div class="play-overlay" data-id="${game.id}">
+                <i class="fas fa-play"></i>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-title">${game.title}</div>
+              <div class="card-meta">
+                <span class="card-category">${game.category || 'General'}</span>
+                <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${game.id}"><i class="fas fa-heart"></i></button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      grid.querySelectorAll('.game-card').forEach(card => {
+        const id = parseInt(card.dataset.id);
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.fav-btn')) return;
+          openGame(id);
+        });
+        const overlay = card.querySelector('.play-overlay');
+        if (overlay) overlay.addEventListener('click', (e) => { e.stopPropagation(); openGame(id); });
+        const favBtn = card.querySelector('.fav-btn');
+        if (favBtn) favBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFavorite(id);
+        });
+      });
+    }
+
+    function renderRecent() {
+      if (!recent.length) { recentStrip.innerHTML = '<span style="color:#475569; font-size:0.9rem;">No games played yet</span>'; return; }
+      recentStrip.innerHTML = recent.slice(0, 8).map(id => {
+        const g = games.find(gg => gg.id === id);
+        if (!g) return '';
+        return `<div class="recent-chip" data-id="${id}"><i class="fas fa-history"></i> ${g.title}</div>`;
+      }).join('');
+      recentStrip.querySelectorAll('.recent-chip').forEach(chip => {
+        chip.addEventListener('click', () => openGame(parseInt(chip.dataset.id)));
+      });
+    }
+
+    async function toggleFavorite(id) {
+      const idx = favorites.indexOf(id);
+      if (idx > -1) favorites.splice(idx, 1);
+      else favorites.push(id);
+      await syncUserData({ favorites: favorites });
+      updateFavCount();
+      renderGrid();
+      if (idx === -1) {
+        await addXP(5);
+      }
+    }
+
+    async function addXP(amount) {
+      if (!userId) return;
+      const { data, error } = await supabase.from('users').select('xp, level').eq('id', userId).single();
+      if (error || !data) return;
+      let newXp = data.xp + amount;
+      let newLevel = data.level;
+      while (newXp >= newLevel * 100) {
+        newXp -= newLevel * 100;
+        newLevel++;
+        await addAchievement(`Reached Level ${newLevel}`);
+      }
+      await supabase.from('users').update({ xp: newXp, level: newLevel }).eq('id', userId);
+      if (userData) {
+        userData.xp = newXp;
+        userData.level = newLevel;
+        updateUserStats();
+      }
+    }
+
+    async function addAchievement(name) {
+      if (!userId) return;
+      const { data } = await supabase.from('users').select('achievements').eq('id', userId).single();
+      let achievements = data?.achievements || [];
+      if (!achievements.includes(name)) {
+        achievements.push(name);
+        await supabase.from('users').update({ achievements }).eq('id', userId);
+      }
+    }
+
+    async function openGame(id) {
+      const game = games.find(g => g.id === id);
+      if (!game) return;
+      currentGameId = id;
+      
+      recent = recent.filter(gid => gid !== id);
+      recent.unshift(id);
+      if (recent.length > 12) recent.pop();
+      await syncUserData({ recently_played: recent });
+      renderRecent();
+
+      await supabase.from('games').update({ plays: (game.plays || 0) + 1 }).eq('id', id);
+      await addXP(20);
+
+      homepage.style.display = 'none';
+      gamePage.classList.add('active');
+      gamePageTitle.textContent = game.title;
+
+      gameIframe.style.display = 'none';
+      iframeError.classList.add('hidden');
+      loadingIndicator.classList.remove('hidden');
+
+      setTimeout(() => {
+        gameIframe.src = game.url;
+        gameIframe.style.display = 'block';
+        loadingIndicator.classList.add('hidden');
+        
+        gameIframe.onerror = function() {
+          loadingIndicator.classList.add('hidden');
+          gameIframe.style.display = 'none';
+          iframeError.classList.remove('hidden');
+        };
+        gameIframe.onload = function() {
+          loadingIndicator.classList.add('hidden');
+          gameIframe.style.display = 'block';
+          iframeError.classList.add('hidden');
+        };
+        setTimeout(() => {
+          loadingIndicator.classList.add('hidden');
+          gameIframe.style.display = 'block';
+        }, 4000);
+      }, 300);
+    }
+
+    function goHome() {
+      gamePage.classList.remove('active');
+      homepage.style.display = 'block';
+      gameIframe.src = '';
+      iframeError.classList.add('hidden');
+      loadingIndicator.classList.add('hidden');
+      gameIframe.style.display = 'none';
+      currentGameId = null;
+    }
+
+    function toggleFullscreen() {
+      const iframe = document.getElementById('gameIframe');
+      if (!document.fullscreenElement) {
+        iframe.requestFullscreen?.() || iframe.webkitRequestFullscreen?.() || iframe.msRequestFullscreen?.();
+      } else {
+        document.exitFullscreen?.() || document.webkitExitFullscreen?.() || document.msExitFullscreen?.();
+      }
+    }
+
+    function applySettings(settings) {
+      if (settings.website_name) {
+        siteTitle.innerHTML = `<i class="fas fa-gamepad" style="color:#a78bfa; margin-right: 8px;"></i>${settings.website_name}`;
+        document.title = settings.website_name;
+      }
+      if (settings.favicon_url) {
+        let link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        link.href = settings.favicon_url;
+        document.head.appendChild(link);
+      }
+      if (settings.theme_color) {
+        document.body.style.backgroundColor = settings.theme_color;
+      }
+      if (settings.background_css) {
+        document.body.style.backgroundImage = settings.background_css;
+      }
+      if (settings.maintenance_mode) {
+        alert(settings.maintenance_message || 'Site is under maintenance.');
+      }
+    }
+
+    async function init() {
+      settings = await fetchSettings();
+      applySettings(settings);
+      await getOrCreateUser();
+      games = await fetchGames();
+      renderGrid();
+      renderRecent();
+      updateFavCount();
+      updateUserStats();
+
+      // MRMND অ্যাড ইনজেক্ট করুন (হেডারে এবং ফুটারে থাকা)
+      injectMRMNDAds();
+
+      // Supabase থেকে অ্যাড ফেচ করে ইনজেক্ট করুন
+      const ads = await fetchAds();
+      injectAds(ads);
+
+      searchInput.addEventListener('input', (e) => {
+        searchTerm = e.target.value;
+        renderGrid();
+      });
+
+      catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          catBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentCategory = btn.dataset.category;
+          renderGrid();
+        });
+      });
+
+      backHomeBtn.addEventListener('click', goHome);
+      fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+      const lastVisitDate = localStorage.getItem('game_last_visit_date');
+      const today = new Date().toDateString();
+      if (lastVisitDate !== today) {
+        await addXP(30);
+        localStorage.setItem('game_last_visit_date', today);
+      }
+
+      // রিয়েল-টাইম আপডেট
+      supabase
+        .channel('games_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, () => {
+          fetchGames().then(newGames => {
+            games = newGames;
+            renderGrid();
+          });
+        })
+        .subscribe();
+
+      supabase
+        .channel('ads_changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'advertisements' }, () => {
+          fetchAds().then(newAds => {
+            injectAds(newAds);
+          });
+        })
+        .subscribe();
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>
