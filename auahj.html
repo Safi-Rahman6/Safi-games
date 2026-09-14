@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compact iframe grid · gigapub links</title>
+    <title>All links duplicated · small iframes</title>
     <style>
         * {
             box-sizing: border-box;
@@ -71,7 +71,7 @@
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            width: 260px;               /* small card */
+            width: 260px;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
@@ -110,13 +110,24 @@
             text-overflow: ellipsis;
         }
 
+        .iframe-label .copy-tag {
+            background: #2a3a4e;
+            color: #fbbf24;
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 20px;
+            border: 1px solid #4a5b73;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
         .iframe-wrapper {
             border-radius: 10px;
             overflow: hidden;
             background: #0b0f16;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
             border: 1px solid #2d3a4e;
-            aspect-ratio: 4 / 3;        /* keep it small & uniform */
+            aspect-ratio: 4 / 3;
             width: 100%;
         }
 
@@ -126,11 +137,10 @@
             height: 100%;
             border: 0;
             background: #ffffff;
-            pointer-events: auto;        /* interactive, but small */
-            font-size: 0;                /* avoids scaling issues */
+            pointer-events: auto;
+            font-size: 0;
         }
 
-        /* Fallback for very small screens */
         @media (max-width: 600px) {
             .iframe-card {
                 width: 220px;
@@ -143,7 +153,7 @@
             }
         }
 
-        .duplicate-note {
+        .note {
             margin-top: 2rem;
             color: #5f6c80;
             font-size: 0.75rem;
@@ -154,7 +164,7 @@
             max-width: 600px;
         }
 
-        .duplicate-note code {
+        .note code {
             background: #1e293b;
             padding: 2px 6px;
             border-radius: 6px;
@@ -166,22 +176,22 @@
 <body>
     <div class="header">
         <h1>
-            🔗 small iframes
-            <span>12 links · 11 unique</span>
+            🔗 duplicated iframes
+            <span>11 links × 2 = 22 iframes</span>
         </h1>
-        <p>gigapub.tech · compact grid · each card ~260px wide</p>
+        <p>gigapub.tech · every link appears twice</p>
     </div>
 
     <div class="iframe-grid" id="iframeGrid"></div>
 
-    <div class="duplicate-note">
-        ⚡ <code>lxrcaaf56</code> appears twice — both rendered (as provided).
+    <div class="note">
+        ⚡ All 11 links duplicated — each link rendered twice (22 total).
     </div>
 
     <script>
         (function() {
-            // Original list of links exactly as provided (with duplicates preserved)
-            const rawLinks = [
+            // Original 11 unique links from the user
+            const baseLinks = [
                 "https://link.gigapub.tech/l/nf4c91apv",
                 "https://link.gigapub.tech/l/98fmo4577",
                 "https://link.gigapub.tech/l/9qnvugjtuq",
@@ -191,24 +201,17 @@
                 "https://link.gigapub.tech/l/9cmmt3w9f1",
                 "https://link.gigapub.tech/l/c8d5pq2t7",
                 "https://link.gigapub.tech/l/91y61fldy8",
-                "https://link.gigapub.tech/l/lxrcaaf56",   // duplicate
-                "https://link.gigapub.tech/l/5lnthrxn"
+                "https://link.gigapub.tech/l/5lnthrxn",
+                "https://link.gigapub.tech/l/lxrcaaf56"
             ];
 
-            // Note: The input string had "https://link.gigapub.tech/l/9c6bqoyjlt" (no 'h' after 'lt')
-            // I've corrected to the most likely intended: "https://link.gigapub.tech/l/9c6bqoyjlt" 
-            // Actually the raw text: "https://link.gigapub.tech/l/9c6bqoyjlthttps://..." 
-            // → first link is "https://link.gigapub.tech/l/9c6bqoyjlt" (then immediately https).
-            // I'll keep that: '9c6bqoyjlt' (no extra 'h'). But if we need to be exact, the provided string was:
-            // "https://link.gigapub.tech/l/9c6bqoyjlthttps://link.gigapub.tech/l/9cmmt3w9f1"
-            // So "9c6bqoyjlt" is followed by "https" — so the link ends with 't'. Correct.
-            // I'll keep the array as above with "9c6bqoyjlt". And also "5lnthrxn" at the end.
-            // Also check "91y61fldy8" and "lxrcaaf56" duplicate.
-            // Also note: "https://link.gigapub.tech/l/lxrcaaf56" appears twice.
-            
-            // For clarity, I'll ensure the last link is "5lnthrxn" as provided.
+            // Build the final list with every link duplicated (2 copies each)
+            const rawLinks = [];
+            baseLinks.forEach((link, idx) => {
+                rawLinks.push(link);   // first copy
+                rawLinks.push(link);   // second copy
+            });
 
-            // Small helper to get a readable short code from the link
             function getShortCode(url) {
                 try {
                     const parts = url.split('/');
@@ -219,7 +222,6 @@
                 }
             }
 
-            // Trim a bit for the badge (max 12 chars)
             function getBadgeText(url) {
                 const code = getShortCode(url);
                 if (code.length > 12) return code.slice(0, 10) + '…';
@@ -228,78 +230,65 @@
 
             const grid = document.getElementById('iframeGrid');
             if (!grid) return;
-
-            // Clear (just in case)
             grid.innerHTML = '';
 
-            // Create a card for each link
             rawLinks.forEach((link, index) => {
-                // Create card container
                 const card = document.createElement('div');
                 card.className = 'iframe-card';
 
-                // Label row
                 const labelDiv = document.createElement('div');
                 labelDiv.className = 'iframe-label';
 
-                // Left: link number
                 const numberSpan = document.createElement('span');
                 numberSpan.textContent = `#${index + 1}`;
                 numberSpan.style.fontWeight = '600';
                 numberSpan.style.color = '#b9c7dc';
 
-                // Right: badge with short code
+                const rightSide = document.createElement('div');
+                rightSide.style.display = 'flex';
+                rightSide.style.alignItems = 'center';
+                rightSide.style.gap = '4px';
+
                 const badgeSpan = document.createElement('span');
                 badgeSpan.className = 'badge';
                 badgeSpan.textContent = getBadgeText(link);
-                badgeSpan.title = link;   // show full URL on hover
+                badgeSpan.title = link;
+
+                // Mark every second occurrence as a duplicate copy
+                const isCopy = (index % 2 === 1);
+                if (isCopy) {
+                    const copyTag = document.createElement('span');
+                    copyTag.className = 'copy-tag';
+                    copyTag.textContent = 'COPY';
+                    rightSide.appendChild(copyTag);
+                }
+
+                rightSide.appendChild(badgeSpan);
 
                 labelDiv.appendChild(numberSpan);
-                labelDiv.appendChild(badgeSpan);
+                labelDiv.appendChild(rightSide);
 
-                // iframe wrapper
                 const wrapper = document.createElement('div');
                 wrapper.className = 'iframe-wrapper';
 
-                // The iframe itself – small, sandboxed lightly for safety, but allows most content
                 const iframe = document.createElement('iframe');
                 iframe.src = link;
-                iframe.loading = 'lazy';           // lazy load for performance
+                iframe.loading = 'lazy';
                 iframe.title = `Embedded link ${index + 1}: ${getShortCode(link)}`;
-                // Allow scripts & forms, but keep sandbox optional (some sites may require more).
-                // We use a permissive but safe sandbox (no top navigation, etc.)
                 iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-downloads';
-                // Note: allow-same-origin + allow-scripts together can be risky if the site is malicious,
-                // but for this demo it's acceptable. For production, consider stricter rules.
                 iframe.referrerPolicy = 'no-referrer';
-                // Allow fullscreen (optional)
                 iframe.allow = 'fullscreen;';
 
-                // Append iframe to wrapper
                 wrapper.appendChild(iframe);
 
-                // Assemble card
                 card.appendChild(labelDiv);
                 card.appendChild(wrapper);
 
-                // Add to grid
                 grid.appendChild(card);
             });
 
-            // Tiny fix: due to a typo in the input string, we may have an extra "h" issue.
-            // But no action needed — all links are from the given string.
-            // The list we defined matches the intended: 
-            // nf4c91apv, 98fmo4577, 9qnvugjtuq, y2p81k97q, lxrcaaf56, 9c6bqoyjlt, 9cmmt3w9f1,
-            // c8d5pq2t7, 91y61fldy8, lxrcaaf56 (dup), 5lnthrxn.
-            // The raw provided string: 
-            // .../9c6bqoyjlthttps://... → we treat as .../9c6bqoyjlt + https → correct.
-            // So the array is faithful.
-
-            // Optional: console log total
-            console.log(`[iframe grid] rendered ${rawLinks.length} iframes (including duplicate).`);
+            console.log(`[iframe grid] rendered ${rawLinks.length} iframes (every link duplicated).`);
         })();
     </script>
-
-    <!-- ensure any stray iframe doesn't break layout -->
 </body>
 </html>
