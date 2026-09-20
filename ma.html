@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>২৪ বার ডুপ্লিকেট · small iframes</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0f172a;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #e2e8f0;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 span {
+            background: #1e293b;
+            color: #a5b4fc;
+            font-size: 0.8rem;
+            font-weight: 400;
+            padding: 4px 10px;
+            border-radius: 30px;
+            border: 1px solid #334155;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 6px;
+        }
+
+        .iframe-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .iframe-card {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 12px 12px 10px 12px;
+            box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.7), 0 0 0 1px #2d3a4e inset;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            width: 260px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .iframe-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 24px -8px #020617, 0 0 0 1px #3b4b63 inset;
+        }
+
+        .iframe-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #94a3b8;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 0 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .iframe-label .badge {
+            background: #263445;
+            color: #7aa2f7;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.65rem;
+            padding: 2px 7px;
+            border-radius: 20px;
+            border: 1px solid #334760;
+            font-weight: 400;
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .iframe-wrapper {
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0b0f16;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2d3a4e;
+            aspect-ratio: 4 / 3;
+            width: 100%;
+        }
+
+        .iframe-wrapper iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #ffffff;
+            pointer-events: auto;
+            font-size: 0;
+        }
+
+        @media (max-width: 600px) {
+            .iframe-card {
+                width: 220px;
+            }
+            body {
+                padding: 1rem 0.5rem;
+            }
+            .header h1 {
+                font-size: 1.3rem;
+            }
+        }
+
+        .note {
+            margin-top: 2rem;
+            color: #5f6c80;
+            font-size: 0.75rem;
+            text-align: center;
+            border-top: 1px solid #1e293b;
+            padding-top: 1.2rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .note code {
+            background: #1e293b;
+            padding: 2px 6px;
+            border-radius: 6px;
+            color: #b9c7dc;
+            font-size: 0.7rem;
+        }
+
+        .copy-badge {
+            background: #2a3a4e;
+            color: #fbbf24;
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 20px;
+            border: 1px solid #4a5b73;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            🔗 ২৪ বার ডুপ্লিকেট
+            <span>১টি লিঙ্ক × ২৪ = ২৪ iframe</span>
+        </h1>
+        <p>profitableratecpmnetwork.com · একই লিঙ্ক ২৪ বার</p>
+    </div>
+
+    <div class="iframe-grid" id="iframeGrid"></div>
+
+    <div class="note">
+        ⚡ লিঙ্ক: <code>wx1141q9w</code> — ২৪ বার রেন্ডার করা হয়েছে।
+    </div>
+
+    <script>
+        (function() {
+            // আপনার দেওয়া লিঙ্ক
+            const link = "https://www.profitableratecpmnetwork.com/wx1141q9w?key=9e386f66287984adbde6c05d1aab9583";
+
+            // ২৪ বার ডুপ্লিকেট
+            const rawLinks = Array(24).fill(link);
+
+            function getShortCode(url) {
+                try {
+                    const parts = url.split('/');
+                    const last = parts[parts.length - 1];
+                    const code = last.split('?')[0];
+                    return code || 'link';
+                } catch (e) {
+                    return 'link';
+                }
+            }
+
+            function getBadgeText(url) {
+                const code = getShortCode(url);
+                if (code.length > 12) return code.slice(0, 10) + '…';
+                return code;
+            }
+
+            const grid = document.getElementById('iframeGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            rawLinks.forEach((link, index) => {
+                const card = document.createElement('div');
+                card.className = 'iframe-card';
+
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'iframe-label';
+
+                const numberSpan = document.createElement('span');
+                numberSpan.textContent = `#${index + 1}`;
+                numberSpan.style.fontWeight = '600';
+                numberSpan.style.color = '#b9c7dc';
+
+                const rightSide = document.createElement('div');
+                rightSide.style.display = 'flex';
+                rightSide.style.alignItems = 'center';
+                rightSide.style.gap = '4px';
+
+                const badgeSpan = document.createElement('span');
+                badgeSpan.className = 'badge';
+                badgeSpan.textContent = getBadgeText(link);
+                badgeSpan.title = link;
+
+                // প্রথমটি বাদে বাকিগুলো কপি
+                if (index > 0) {
+                    const copyTag = document.createElement('span');
+                    copyTag.className = 'copy-badge';
+                    copyTag.textContent = 'COPY';
+                    rightSide.appendChild(copyTag);
+                }
+
+                rightSide.appendChild(badgeSpan);
+
+                labelDiv.appendChild(numberSpan);
+                labelDiv.appendChild(rightSide);
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'iframe-wrapper';
+
+                const iframe = document.createElement('iframe');
+                iframe.src = link;
+                iframe.loading = 'lazy';
+                iframe.title = `Embedded link ${index + 1}: ${getShortCode(link)}`;
+                iframe.sandbox = 'allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-orientation-lock allow-pointer-lock allow-presentation allow-downloads';
+                iframe.referrerPolicy = 'no-referrer';
+                iframe.allow = 'fullscreen;';
+
+                wrapper.appendChild(iframe);
+
+                card.appendChild(labelDiv);
+                card.appendChild(wrapper);
+
+                grid.appendChild(card);
+            });
+
+            console.log(`[iframe grid] ${rawLinks.length} iframes রেন্ডার করা হয়েছে (২৪টি কপি)।`);
+        })();
+    </script>
+</body>
+  </html>
