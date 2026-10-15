@@ -1,0 +1,1839 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b12">
+<title>Easy Forex — R22 Sniper v22.8</title>
+<style>
+:root{--bg:#070b12;--bg2:#0b1018;--card2:#121a26;--line:#1a2433;--txt:#e2eaf4;--mut:#7a8ba3;--dim:#44556b;--grn:#10c98a;--red:#ff4d6a;--ylw:#ffb020;--blu:#3ba9ff;--pur:#9b7cff;--cyn:#2dd4bf;--sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans Bengali",sans-serif;font-size:14px;line-height:1.5;display:flex;flex-direction:column;overflow:hidden;height:100dvh}
+button,input{font-family:inherit}
+header{flex:0 0 auto;padding:calc(8px + var(--st)) 12px 8px;background:linear-gradient(180deg,#0c121c,#070b12);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;z-index:20}
+.logo{font-weight:800;font-size:13px;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.logo .dot{width:8px;height:8px;border-radius:50%;background:var(--blu);animation:pulse 2s infinite}
+.logo .dot.run{background:var(--grn)}.logo .dot.warn{background:var(--ylw)}.logo .dot.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.grow{flex:1}.pills{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;background:#121a26;border:1px solid var(--line);font-size:10px;color:var(--mut);white-space:nowrap;font-weight:600}
+.pill b{color:var(--txt);font-variant-numeric:tabular-nums}
+.pill .led{width:5px;height:5px;border-radius:50%;background:var(--dim)}
+.pill.ok .led{background:var(--grn)}.pill.bad .led{background:var(--red)}.pill.warn .led{background:var(--ylw)}
+main{flex:1 1 auto;overflow-y:auto;overflow-x:hidden}
+.panel{display:none;padding:12px;max-width:1400px;margin:0 auto;width:100%}.panel.active{display:block}
+nav.tabbar{flex:0 0 auto;display:flex;background:linear-gradient(180deg,#0c121c,#070b12);border-top:1px solid var(--line);padding-bottom:var(--sb);z-index:30}
+.tab{flex:1;background:none;border:none;color:var(--dim);padding:8px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;min-height:52px;position:relative}
+.tab span{font-size:17px;filter:grayscale(1) opacity(.55)}.tab em{font-style:normal;font-size:9px;font-weight:600}
+.tab.active{color:var(--blu)}.tab.active span{filter:none}
+.tab.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:26px;height:2px;background:var(--blu);border-radius:0 0 4px 4px}
+.card{background:linear-gradient(180deg,var(--bg2),#080c14);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+h2{font-size:13px;font-weight:700}h3{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.sub{color:var(--mut);font-size:11.5px;line-height:1.45}.hr{height:1px;background:var(--line);margin:10px 0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.spread{justify-content:space-between}
+.btn{background:var(--card2);border:1px solid var(--line);color:var(--txt);padding:10px 14px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px}
+.btn:active{transform:scale(.96)}.btn.grn{background:#0d2f24;border-color:#1a5c45;color:#5ff0bb}
+.btn.red{background:#33121b;border-color:#6d2334;color:#ff9db0}.btn.ylw{background:#2c2210;border-color:#6d5a23;color:#ffd07a}
+.btn.sm{padding:7px 11px;font-size:11.5px;min-height:34px}.btn.xs{padding:5px 9px;font-size:11px;min-height:30px}.btn.grow{flex:1}
+.sigbox{border-radius:14px;border:2px solid var(--line);padding:16px 12px;background:linear-gradient(160deg,#0e1520,#080c14);text-align:center;margin-bottom:10px;min-height:190px}
+.sigbox.up{border-color:#12795a;background:linear-gradient(160deg,#0c1f18,#080c14);box-shadow:0 0 40px rgba(16,201,138,.14) inset}
+.sigbox.dn{border-color:#8a2740;background:linear-gradient(160deg,#1f0e13,#080c14);box-shadow:0 0 40px rgba(255,77,106,.14) inset}
+.sigbox.retry{border-color:#8a6d1a;background:linear-gradient(160deg,#231a08,#080c14);box-shadow:0 0 40px rgba(255,176,32,.14) inset}
+.sigbox.flip{border-color:#9b7cff;background:linear-gradient(160deg,#1a1230,#080c14);box-shadow:0 0 40px rgba(155,124,255,.20) inset}
+.sigbox.learn{border-color:#9b7cff;background:linear-gradient(160deg,#0f0a1c,#080c14);box-shadow:0 0 40px rgba(155,124,255,.18) inset}
+.sigbox.skip{border-color:#2a4568;background:linear-gradient(160deg,#0c1624,#080c14)}
+.sigbox.idle{border-color:var(--line)}.sigbox.done-w{border-color:#12795a}.sigbox.done-l{border-color:#8a2740}.sigbox.done-t{border-color:#44556b}
+.sig-phase{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);margin-bottom:8px}
+.sig-phase.scan{color:var(--blu)}.sig-phase.trade{color:var(--cyn)}.sig-phase.done{color:var(--grn)}
+.sig-phase.retry{color:var(--ylw);background:rgba(255,176,32,.14);border-color:rgba(255,176,32,.35)}
+.sig-phase.flip{color:#c4b3ff;background:rgba(155,124,255,.18);border-color:rgba(155,124,255,.45)}
+.sig-market{font-size:24px;font-weight:900;letter-spacing:1px}
+.sig-arrow{font-size:40px;font-weight:900;margin:4px 0}
+.sig-arrow.up{color:var(--grn);text-shadow:0 0 22px rgba(16,201,138,.45)}.sig-arrow.dn{color:var(--red);text-shadow:0 0 22px rgba(255,77,106,.45)}
+.count-big{font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;margin:6px 0 2px;color:var(--ylw)}
+.count-big.blue{color:var(--blu)}.count-big.grn{color:var(--grn)}.count-big.red{color:var(--red)}.count-big.dim{color:var(--dim)}
+.progress{height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;margin:10px auto 0;max-width:300px}
+.progress>i{display:block;height:100%;border-radius:99px;transition:width .25s linear;background:linear-gradient(90deg,#2b7fd4,#6a4ce0)}
+.progress.warm>i{background:linear-gradient(90deg,#ffb020,#ff7a45)}.progress.good>i{background:linear-gradient(90deg,#10c98a,#3ba9ff)}
+.sig-info{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:10px;text-align:left;font-size:11px}
+.sig-info .k{color:var(--mut);font-size:9px;font-weight:700;text-transform:uppercase}.sig-info .v{font-weight:700;font-size:12px;font-variant-numeric:tabular-nums}
+.strip{padding:8px 10px;border-radius:8px;font-size:11px;margin-bottom:8px;line-height:1.55}
+.strip.pur{background:rgba(155,124,255,.14);border:1px solid rgba(155,124,255,.42);color:#c4b3ff}
+.strip.blu{background:rgba(59,169,255,.12);border:1px solid rgba(59,169,255,.4);color:#7cc4ff}
+.strip.grn{background:rgba(16,201,138,.12);border:1px solid rgba(16,201,138,.4);color:#5ff0bb}
+.strip.ylw{background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.4);color:#ffd07a}
+.strip.red{background:rgba(255,77,106,.12);border:1px solid rgba(255,77,106,.4);color:#ff9db0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:7px}
+.st{background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:9px 8px}
+.st .k{font-size:8.5px;color:var(--mut);text-transform:uppercase;font-weight:700}.st .v{font-size:17px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums}
+.st .m{font-size:9px;color:var(--dim);margin-top:1px}
+.logbox{background:#05080d;border:1px solid var(--line);border-radius:9px;padding:9px;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;max-height:60vh;overflow:auto;line-height:1.55}
+.ll{display:flex;gap:6px;padding:2px 0;border-bottom:1px solid rgba(26,36,51,.3);word-break:break-word}
+.ll .t{color:#3d4d63;flex:0 0 58px;font-weight:600}.ll .lv{flex:0 0 14px;font-weight:800;text-transform:uppercase;font-size:9px;text-align:center}
+.lv.i{color:#5d7898}.lv.o{color:#3fd6a0}.lv.w{color:#ffc247}.lv.e{color:#ff6f8a}.ll .msg{flex:1}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:6px}
+.chip{display:flex;flex-direction:column;gap:2px;padding:8px 7px;border-radius:9px;background:var(--card2);border:1px solid var(--line);cursor:pointer;opacity:.4;position:relative;user-select:none}
+.chip.on{opacity:1;border-color:var(--grn);background:rgba(16,201,138,.12)}
+.chip .cs{font-size:11.5px;font-weight:800}.chip .cd{font-size:9px;color:var(--dim)}
+.chip .csd{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:var(--dim)}
+.chip .csd.ok{background:var(--grn)}.chip .csd.warn{background:var(--ylw)}.chip .csd.err{background:var(--red)}
+.hist{display:flex;flex-direction:column;gap:6px}
+.hcard{background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:9px 10px}
+.hcard.win{border-left:3px solid var(--grn)}.hcard.loss{border-left:3px solid var(--red)}.hcard.tie{border-left:3px solid var(--dim)}
+.hcard .top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.hcard .sym{font-weight:800;font-size:12.5px}
+.hcard .prices{font-size:10.5px;color:var(--mut);margin:4px 0}.hcard .bottom{display:flex;justify-content:space-between;align-items:center}
+.badge{display:inline-block;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:800;border:1px solid}
+.b-up{background:rgba(16,201,138,.14);color:#5ff0bb;border-color:rgba(16,201,138,.32)}
+.b-dn{background:rgba(255,77,106,.14);color:#ff9db0;border-color:rgba(255,77,106,.32)}
+.b-u{background:rgba(255,176,32,.14);color:#ffd07a;border-color:rgba(255,176,32,.3)}
+.b-tie{background:rgba(120,120,120,.14);color:#a0a0a0;border-color:rgba(120,120,120,.32)}
+.gr{display:inline-block;padding:1px 7px;border-radius:5px;font-size:10px;font-weight:900;margin-left:3px}
+.gr-A{background:linear-gradient(135deg,#ffd700,#ff9500);color:#070b12}
+.gr-B{background:linear-gradient(135deg,#10c98a,#2dd4bf);color:#070b12}
+.gr-C{background:rgba(255,176,32,.25);color:#ffd07a}
+.gr-D{background:rgba(255,77,106,.22);color:#ff9db0}
+.gr-F{background:rgba(155,124,255,.25);color:#c4b3ff}
+.gr-U{background:rgba(255,77,106,.32);color:#ffd0d8;border:1px solid rgba(255,77,106,.6)}
+.gr-FLIP{background:linear-gradient(135deg,#9b7cff,#3ba9ff);color:#070b12}
+.gr-V{background:linear-gradient(135deg,#10c98a,#5ff0bb);color:#070b12}
+.gr-P{background:rgba(255,176,32,.24);color:#ffd07a;border:1px solid rgba(255,176,32,.4)}
+.gr-R{background:rgba(255,77,106,.18);color:#ff9db0;border:1px solid rgba(255,77,106,.4)}
+.gr-I{background:rgba(120,140,170,.18);color:#8ba0bd;border:1px solid rgba(120,140,170,.35)}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.field label{font-size:10.5px;font-weight:700;color:var(--mut);text-transform:uppercase}
+.field input[type=text]{background:#0a0f16;border:1px solid var(--line);color:var(--txt);padding:9px 10px;border-radius:8px;font-size:13px;width:100%;min-height:40px;outline:none}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;cursor:pointer;min-height:42px}
+.switch .lbl{font-size:12.5px;font-weight:600}.switch .desc{font-size:10px;color:var(--dim)}
+.toggle{width:42px;height:24px;border-radius:99px;background:#1a2433;border:1px solid var(--line);position:relative;flex:0 0 auto;transition:.2s}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#5a6b82;transition:.2s}
+.toggle.on{background:rgba(16,201,138,.22);border-color:rgba(16,201,138,.45)}.toggle.on::after{left:18px;background:var(--grn)}
+#toasts{position:fixed;top:calc(8px + var(--st));left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:5px;pointer-events:none;width:calc(100% - 24px);max-width:360px}
+.toast{padding:10px 13px;border-radius:9px;font-size:12px;font-weight:700;background:#121a26;border:1px solid var(--line);box-shadow:0 5px 20px rgba(0,0,0,.5);text-align:center}
+.toast.ok{background:#0d2f24;border-color:#1a5c45;color:#5ff0bb}.toast.err{background:#33121b;border-color:#6d2334;color:#ff9db0}.toast.warn{background:#2c2210;border-color:#6d5a23;color:#ffd07a}
+.toast.flip{background:#221545;border-color:#5f4aa8;color:#c4b3ff}
+.empty{text-align:center;color:var(--dim);padding:24px 14px;font-size:12px}
+.tnum{font-variant-numeric:tabular-nums}.grn{color:var(--grn)}.red{color:var(--red)}.ylw{color:var(--ylw)}.blu{color:var(--blu)}.mut{color:var(--mut)}.pur{color:var(--pur)}.dim{color:var(--dim)}.cyn{color:var(--cyn)}
+.candle-bar{height:3px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;margin-bottom:10px}
+.candle-bar>i{display:block;height:100%;border-radius:99px;transition:width .25s linear;background:linear-gradient(90deg,#3ba9ff,#9b7cff)}
+.candle-bar.warm>i{background:linear-gradient(90deg,#ffb020,#ff7a45)}.candle-bar.hot>i{background:linear-gradient(90deg,#ff4d6a,#ff7a45)}
+.chart-wrap{background:linear-gradient(180deg,#0b1018,#06090f);border:1px solid var(--line);border-radius:11px;padding:8px 6px 6px;margin-bottom:10px}
+.chart-head{display:flex;align-items:center;gap:7px;padding:0 3px 6px;border-bottom:1px solid rgba(26,36,51,.45);margin-bottom:4px;flex-wrap:wrap}
+.chart-sym{font-weight:900;font-size:13px}.chart-price{font-weight:800;font-size:13px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.04)}
+.chart-price.up{color:var(--grn)}.chart-price.dn{color:var(--red)}
+.chart-src{font-size:8.5px;font-weight:800;padding:2px 6px;border-radius:999px;border:1px solid}
+.chart-src.live{color:var(--grn);background:rgba(16,201,138,.1);border-color:rgba(16,201,138,.3)}
+.chart-src.warn{color:var(--ylw);background:rgba(255,176,32,.1);border-color:rgba(255,176,32,.3)}
+.chart-src.err{color:var(--red);background:rgba(255,77,106,.1);border-color:rgba(255,77,106,.3)}
+#chartCanvas{display:block;width:100%;height:180px}
+.session-pill{font-size:8.5px;padding:1px 6px;border-radius:99px;font-weight:800}
+.session-pill.LDN_NY{background:rgba(16,201,138,.18);color:#5ff0bb}.session-pill.LONDON{background:rgba(59,169,255,.18);color:#7cc4ff}
+.session-pill.NY{background:rgba(155,124,255,.18);color:#c4b3ff}.session-pill.ASIA{background:rgba(255,176,32,.14);color:#ffd07a}.session-pill.OFF{background:rgba(255,77,106,.14);color:#ff9db0}
+.kv{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid rgba(26,36,51,.3);font-size:11px}
+.kv:last-child{border-bottom:none}.kv b{color:var(--txt)}
+.ls-row{display:flex;gap:6px;align-items:center;padding:5px 2px;border-bottom:1px solid rgba(26,36,51,.35);font-size:11px}
+.ls-row.top1{background:rgba(16,201,138,.08);border-radius:6px;padding-left:6px;padding-right:6px;border-bottom-color:transparent}
+.ls-rank{min-width:30px;font-size:10px;font-weight:900}
+.ls-sym{min-width:52px;font-weight:800;font-size:11.5px}
+.ls-bars{min-width:38px;font-size:10px;text-align:right;font-variant-numeric:tabular-nums}
+.ls-status{flex:1;font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ls-right{min-width:98px;text-align:right;font-size:10px;white-space:nowrap}
+.net-banner{padding:8px 10px;border-radius:9px;font-size:11px;margin-bottom:8px;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.35);color:#ffd07a}
+.analysis-card{background:linear-gradient(180deg,#0d1520,#080c14);border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:10px}
+.analysis-card .head{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.analysis-card .head h4{font-size:12.5px;font-weight:800;flex:1}
+.bt-progress{padding:8px 10px;border-radius:9px;background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.28);font-size:11px;color:#7ee9d8;margin-bottom:8px}
+.bt-progress .bar{height:4px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;margin-top:6px}
+.bt-progress .bar>i{display:block;height:100%;background:linear-gradient(90deg,#2dd4bf,#3ba9ff);transition:width .3s;border-radius:99px}
+.ls-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ls-head h3{margin:0;font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.ls-head .ph{font-size:9px;color:var(--blu);font-weight:700}
+.ls-bar{height:3px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;margin-bottom:8px}
+.ls-bar>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#3ba9ff,#9b7cff);transition:width .3s}
+.ls-hdr{display:flex;gap:6px;padding:4px 2px;font-size:8.5px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="dot" id="logoDot"></span>Easy Forex · R22 v22.8</div>
+  <div class="grow"></div>
+  <div class="pills">
+    <span class="pill" id="pSession"><span class="led"></span>SES <b id="tSession">—</b></span>
+    <span class="pill" id="pCandle"><span class="led"></span>⏱ <b id="tCandle">--</b></span>
+    <span class="pill" id="pData"><span class="led"></span>DATA <b id="tData">—</b></span>
+    <span class="pill" id="pRules"><span class="led"></span>RULES <b id="tRules">—</b></span>
+    <span class="pill" id="pCalib"><span class="led"></span>CAL <b id="tCalib">—</b></span>
+    <span class="pill" id="pNet"><span class="led"></span>NET <b id="tNet">OK</b></span>
+  </div>
+</header>
+<main id="main">
+<section class="panel active" id="panel-signal">
+  <div class="candle-bar" id="candleBar"><i style="width:0%"></i></div>
+  <div id="netBanner"></div>
+  <div class="chart-wrap">
+    <div class="chart-head">
+      <span class="chart-sym" id="chartSym">—</span><span class="chart-price" id="chartPrice">—</span>
+      <span class="chart-src live" id="chartSrc">LIVE</span>
+      <span style="margin-left:auto;font-size:9px;color:var(--mut)" id="chartBars">— bars</span>
+    </div>
+    <canvas id="chartCanvas"></canvas>
+  </div>
+  <div id="btProgress"></div>
+  <div id="sigBox" class="sigbox idle">
+    <div class="sig-phase">⏸ বন্ধ</div><div class="sig-market">—</div>
+    <div class="sig-arrow" style="color:#3a4a5f">⌛</div><div class="sub">চালু করুন</div>
+  </div>
+  <div id="queuedBox"></div>
+  <div class="card" id="liveScanCard">
+    <div class="ls-head">
+      <h3>🔬 লাইভ স্ক্যান</h3>
+      <span class="ph" id="lsPhase">—</span>
+    </div>
+    <div class="ls-bar"><i id="lsBarFill"></i></div>
+    <div class="ls-hdr">
+      <span class="ls-rank">#</span>
+      <span class="ls-sym">পেয়ার</span>
+      <span class="ls-bars">বার</span>
+      <span class="ls-status">অবস্থা</span>
+      <span class="ls-right">দিক · গ্রেড · %</span>
+    </div>
+    <div id="liveScanList"></div>
+  </div>
+  <div id="analysisBox"></div>
+  <div class="card">
+    <div class="row" style="gap:6px">
+      <button class="btn grn grow" id="bStart" style="flex:2">▶ চালু করুন</button>
+      <button class="btn sm" id="bRefresh">↻</button>
+      <button class="btn sm" id="bRemine" title="নিয়ম আবার খুঁজুন">🧠</button>
+    </div>
+    <div class="hr"></div>
+    <div class="stats">
+      <div class="st"><div class="k">মোট</div><div class="v tnum" id="sTotal">0</div></div>
+      <div class="st"><div class="k">WIN</div><div class="v tnum grn" id="sWin">0</div></div>
+      <div class="st"><div class="k">LOSS</div><div class="v tnum red" id="sLoss">0</div></div>
+      <div class="st"><div class="k">FLIP</div><div class="v tnum pur" id="sFlip">0</div></div>
+      <div class="st"><div class="k">WR</div><div class="v tnum" id="sRate">—</div><div class="m" id="sRateM">—</div></div>
+      <div class="st"><div class="k">নেট পিপস</div><div class="v tnum" id="sPips">0.0</div></div>
+    </div>
+  </div>
+  <div class="card"><h3>🔎 শেষ স্ক্যান</h3><div id="scanPanel"></div></div>
+  <div class="card"><h3>📈 সাম্প্রতিক</h3><div id="lastFires"></div></div>
+</section>
+
+<section class="panel" id="panel-markets">
+  <div class="card">
+    <div class="row spread" style="margin-bottom:8px">
+      <div><h2>🌐 মার্কেট</h2><div class="sub"><b id="mCount">0</b> সক্রিয়</div></div>
+      <div class="row" style="gap:4px"><button class="btn xs" id="bSelectAll">সব</button><button class="btn xs" id="bDeselectAll">কিছু না</button></div>
+    </div>
+    <div class="field"><input type="text" id="mSearch" placeholder="🔍 পেয়ার…"></div>
+    <div class="chips" id="marketChips"></div>
+  </div>
+  <div class="card">
+    <h3>⚙️ সিগন্যাল সেটিংস</h3>
+    <div class="field"><label>সিগন্যাল সময় — <b id="thVal" class="blu">40</b>s</label><input type="range" id="thRange" min="12" max="90" step="1" value="40" style="width:100%;accent-color:#9b7cff;height:34px"></div>
+    <div class="field"><label>স্বাভাবিক গ্রেড লেভেল — <b id="glVal" class="ylw">A+B</b></label><input type="range" id="glRange" min="1" max="3" step="1" value="2" style="width:100%;accent-color:#ffb020;height:34px"><div class="sub">১=শুধু A · ২=A+B · ৩=A+B+C</div></div>
+    <div class="field"><label>সর্বোচ্চ গ্যাপ — <b id="mgVal" class="cyn">1</b></label><input type="range" id="mgRange" min="1" max="4" step="1" value="1" style="width:100%;accent-color:#2dd4bf;height:34px"></div>
+    <div class="switch" data-key="autoCalib"><div><div class="lbl">🎯 অটো-ক্যালিব্রেশন</div><div class="desc">Wilson LB ভিত্তিক — ট্রেইল-প্রুফ</div></div><div class="toggle on"></div></div>
+    <div class="switch" data-key="aggressiveFire"><div><div class="lbl">🎯 প্রতি ক্যান্ডেলে ফায়ার</div><div class="desc">কোনো ক্যান্ডেল খালি যাবে না</div></div><div class="toggle on"></div></div>
+    <div class="switch" data-key="forceFill"><div><div class="lbl">⏱ গ্যাপ ভরাট</div></div><div class="toggle on"></div></div>
+    <div class="switch" data-key="noForcedOff"><div><div class="lbl">🌙 OFF সেশনে Forced বন্ধ</div></div><div class="toggle on"></div></div>
+    <div class="switch" data-key="usePeer"><div><div class="lbl">🔗 পিয়ার-পেয়ার ফিচার</div></div><div class="toggle on"></div></div>
+    <div class="switch" data-key="strictStability"><div><div class="lbl">🔒 স্টেবিলিটি চেক</div></div><div class="toggle on"></div></div>
+    <div class="switch" data-key="sound"><div><div class="lbl">সাউন্ড</div></div><div class="toggle on"></div></div>
+    <div class="switch" data-key="vibrate"><div><div class="lbl">কম্পন</div></div><div class="toggle on"></div></div>
+    <div class="switch" data-key="autoRefresh"><div><div class="lbl">অটো রিফ্রেশ</div></div><div class="toggle on"></div></div>
+  </div>
+  <div class="card">
+    <h3>🔌 API</h3>
+    <div class="field"><label>Biquote URL</label><input type="text" id="biquoteUrl" value="https://biquote.io/api/{SYMBOL}/ohlc?interval=5m&limit=2000"></div>
+    <div id="netStatus"></div>
+    <div class="row" style="gap:6px;margin-top:6px">
+      <button class="btn sm grow ylw" id="bClearBackoff">🔄 Clear Backoff</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row" style="gap:6px">
+      <button class="btn sm grow" id="bExport">⬇️ CSV</button>
+      <button class="btn sm grow" id="bClearHist">🗑️ হিস্টোরি</button>
+      <button class="btn sm grow red" id="bClearAll">🗑️ সব</button>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="panel-stats">
+  <div class="card">
+    <h2>📊 লাইভ পারফরম্যান্স</h2><div class="hr"></div>
+    <div class="stats">
+      <div class="st"><div class="k">মোট</div><div class="v tnum" id="stTotal">0</div></div>
+      <div class="st"><div class="k">WIN</div><div class="v tnum grn" id="stWin">0</div></div>
+      <div class="st"><div class="k">LOSS</div><div class="v tnum red" id="stLoss">0</div></div>
+      <div class="st"><div class="k">TIE</div><div class="v tnum dim" id="stTie">0</div></div>
+      <div class="st"><div class="k">WR</div><div class="v tnum blu" id="stRate">—</div></div>
+      <div class="st"><div class="k">নেট</div><div class="v tnum" id="stPips">0.0</div></div>
+    </div>
+  </div>
+  <div class="card"><h3>🏆 পেয়ার অনুযায়ী</h3><div id="perPair"></div></div>
+  <div class="card"><h3>🎯 গ্রেড অনুযায়ী</h3><div id="gradePerf"></div></div>
+</section>
+
+<section class="panel" id="panel-logs">
+  <div class="card">
+    <div class="row spread" style="margin-bottom:8px"><h2>📜 লগ</h2><button class="btn xs" id="bClearLog">🗑️</button></div>
+    <div class="logbox" id="log"></div>
+  </div>
+</section>
+
+<section class="panel" id="panel-history">
+  <div class="card">
+    <div class="row spread" style="margin-bottom:8px"><div><h2>🗂️ হিস্টোরি</h2><div class="sub" id="hCount">0</div></div></div>
+    <div class="hist" id="histList"></div>
+  </div>
+</section>
+</main>
+
+<nav class="tabbar" id="tabbar">
+  <button class="tab active" data-tab="signal"><span>📈</span><em>সিগন্যাল</em></button>
+  <button class="tab" data-tab="markets"><span>🌐</span><em>মার্কেট</em></button>
+  <button class="tab" data-tab="stats"><span>📊</span><em>স্ট্যাটস</em></button>
+  <button class="tab" data-tab="logs"><span>📜</span><em>লগ</em></button>
+  <button class="tab" data-tab="history"><span>🗂️</span><em>হিস্টরি</em></button>
+</nav>
+<div id="toasts"></div>
+
+<script>
+"use strict";
+/* v22.8 — Fire every 5 min. No guards. Only calibration-fix. */
+const VER = "22.8.0";
+const SK = { signals:"fxr22.sig.v4", settings:"fxr22.set.v4", active:"fxr22.act.v4", calib:"fxr22.cal.v1" };
+const CANDLE_MS = 300000;
+const CFG = {
+  frameMs: CANDLE_MS, maxCandles: 6000,
+  minBarsMine: 100, minBarsFull: 130, minBarsDataOK: 70,
+  duration: 300, minRemainS: 6, loopMs: 500,
+  exitGraceMs: 2500, exitTimeoutMs: 25000, exitRetryGapMs: 1200, candleMatchTolMs: 30000,
+  routeTimeoutMs: 9000, routeTimeoutFullMs: 20000, reqGap: 400, fetchBatchSize: 3,
+  cacheFreshMs: 90000, hardStaleMs: 900000, freshForDecisionMs: 20000,
+  biquoteUrl: "https://biquote.io/api/{SYMBOL}/ohlc?interval=5m&limit=2000",
+  K: 4, minN: 25, K0: 20, topRules: 120,
+  oosFrac: 0.30, wfBlocks: 3,
+  zA: 3.0, zB: 2.3, zC: 1.6, zD: 1.1,
+  remineEveryMs: 180000,
+  fullRanges: ["1mo","5d"],
+  maxSignalsInMem: 800, saveStateDebounceMs: 800,
+  minLabeledForMine: 60, minSamplesForMine: 35, minOosN: 8,
+  class:{
+    valTrainN: 25, valOosN: 15, valTrainWR: 0.53, valOosWR: 0.52, valZ: 2.0, valBlocks: 1,
+    provTrainWR: 0.52, provOosWR: 0.50, provOosN: 10,
+    rejOosN: 12, rejOosWR: 0.46, rejTrainN: 30, rejTrainWR: 0.47
+  },
+  calib:{
+    size:5, minN:15, minNStrong:25,
+    flipBelow:0.40, weakBelow:0.45, boostAbove:0.60, neutralLo:0.47, neutralHi:0.53,
+    flipLB:0.55, boostLB:0.54, weakUB:0.45,
+    trustCap:0.70, trustN:40, priorWins:10, priorTotal:20,
+    boostPECap:0.82, flipPECap:0.78
+  }
+};
+const MARKETS = ["EURUSD","GBPUSD","USDJPY","USDCHF","AUDUSD","USDCAD","EURGBP","EURJPY","GBPJPY","EURCHF","CADJPY","AUDCAD"];
+
+/*ENGINE_START*/
+const NF = 16;
+const FNAMES = ["c3","c1","trend","pos","rsi","ema","wick","engulf","streak","hour","vol","peer","swing","struct","mom","bodyx"];
+const KSZ = 131072;
+function colOf(b){ return b.close>b.open?1:(b.close<b.open?0:2); }
+function wilsonLB(w, n, z=1.96){
+  if(n<=0) return 0;
+  const p = w/n, z2 = z*z;
+  const denom = 1 + z2/n, center = p + z2/(2*n);
+  const margin = z * Math.sqrt((p*(1-p) + z2/(4*n))/n);
+  return Math.max(0, (center - margin)/denom);
+}
+function wilsonUB(w, n, z=1.96){
+  if(n<=0) return 1;
+  const p = w/n, z2 = z*z;
+  const denom = 1 + z2/n, center = p + z2/(2*n);
+  const margin = z * Math.sqrt((p*(1-p) + z2/(4*n))/n);
+  return Math.min(1, (center + margin)/denom);
+}
+function buildIndicators(bars){
+  const n=bars.length;
+  const atr14=new Float64Array(n), atr50=new Float64Array(n), ema=new Float64Array(n), rsi=new Float64Array(n);
+  let a14=0,a50=0,e=0,ag=0,al=0;
+  for(let i=0;i<n;i++){
+    const b=bars[i]; const pc=i?bars[i-1].close:b.open;
+    const tr=Math.max(b.high-b.low,Math.abs(b.high-pc),Math.abs(b.low-pc));
+    if(i===0){ a14=tr; a50=tr; e=b.close; }
+    else{
+      a14+=(tr-a14)/14; a50+=(tr-a50)/50; e+=(b.close-e)*(2/21);
+      const ch=b.close-pc, g=ch>0?ch:0, l=ch<0?-ch:0;
+      if(i===1){ ag=g; al=l; } else { ag+=(g-ag)/14; al+=(l-al)/14; }
+    }
+    atr14[i]=a14; atr50[i]=a50; ema[i]=e;
+    rsi[i]=(al===0)?(ag===0?50:100):100-100/(1+ag/al);
+  }
+  return {atr14,atr50,ema,rsi};
+}
+function buildNret(bars,ind){
+  const m=new Map();
+  for(let i=100;i<bars.length;i++){ const a=ind.atr14[i]; if(a>0) m.set(bars[i].time,(bars[i].close-bars[i].open)/a); }
+  return m;
+}
+function computePeerDefs(sym,nretAll){
+  const mine=nretAll[sym]; if(!mine) return [];
+  const ts=[...mine.keys()].slice(-1500), out=[];
+  for(const o of Object.keys(nretAll)){
+    if(o===sym) continue;
+    const om=nretAll[o]; if(!om) continue;
+    let n=0,sx=0,sy=0,sxx=0,syy=0,sxy=0;
+    for(const t of ts){ const y=om.get(t); if(y===undefined) continue; const x=mine.get(t); n++; sx+=x; sy+=y; sxx+=x*x; syy+=y*y; sxy+=x*y; }
+    if(n<200) continue;
+    const vx=sxx-sx*sx/n, vy=syy-sy*sy/n; if(vx<=0||vy<=0) continue;
+    const r=(sxy-sx*sy/n)/Math.sqrt(vx*vy);
+    if(Math.abs(r)>=0.40) out.push({sym:o,r});
+  }
+  out.sort((a,b)=>Math.abs(b.r)-Math.abs(a.r));
+  return out.slice(0,6);
+}
+function buildSwingTable(bars, lookback){
+  const n = bars.length, tbl = new Int8Array(n);
+  for(let i=lookback; i<n-lookback; i++){
+    let isHigh = true, isLow = true;
+    const h = bars[i].high, l = bars[i].low;
+    for(let k=1;k<=lookback;k++){
+      if(bars[i-k].high >= h || bars[i+k].high >= h) isHigh = false;
+      if(bars[i-k].low <= l || bars[i+k].low <= l) isLow = false;
+      if(!isHigh && !isLow) break;
+    }
+    tbl[i] = isHigh ? 1 : (isLow ? -1 : 0);
+  }
+  return tbl;
+}
+function buildDataset(bars,peers,now,from){
+  const n=bars.length, W=CANDLE_MS, ind=buildIndicators(bars);
+  const F=new Int8Array(n*NF).fill(-1), valid=new Uint8Array(n), y=new Int8Array(n).fill(-1);
+  const col=new Int8Array(n), streak=new Int8Array(n);
+  for(let i=0;i<n;i++){
+    col[i]=colOf(bars[i]);
+    streak[i]=col[i]===2?0:((i>0&&col[i-1]===col[i])?Math.min(streak[i-1]+1,4):1);
+  }
+  const swingTbl = buildSwingTable(bars, 2);
+  const start=Math.max(100,from||0);
+  for(let i=start;i<n;i++){
+    if(i<30) continue;
+    if(bars[i].time-bars[i-30].time>30*W*1.5) continue;
+    const a=ind.atr14[i]; if(!(a>0)||!(ind.atr50[i]>0)) continue;
+    const o=i*NF, b=bars[i]; valid[i]=1;
+    if(col[i]!==2&&col[i-1]!==2&&col[i-2]!==2) F[o]=col[i-2]*4+col[i-1]*2+col[i];
+    if(col[i]!==2){ const rel=Math.abs(b.close-b.open)/a; F[o+1]=col[i]*3+(rel<0.35?0:rel<0.9?1:2); }
+    if(i>=19){ const d=(b.close-bars[i-19].open)/a; F[o+2]=d<-4?0:d<-1.5?1:d<=1.5?2:d<=4?3:4; }
+    let hi=-Infinity,lo=Infinity;
+    for(let k=i-29;k<=i;k++){ if(bars[k].high>hi)hi=bars[k].high; if(bars[k].low<lo)lo=bars[k].low; }
+    if(hi>lo){ const p=(b.close-lo)/(hi-lo); F[o+3]=p<0.15?0:p<0.4?1:p<=0.6?2:p<=0.85?3:4; }
+    const r=ind.rsi[i]; F[o+4]=r<30?0:r<42?1:r<=58?2:r<=70?3:4;
+    const de=(b.close-ind.ema[i])/a; F[o+5]=de<-1.5?0:de<-0.4?1:de<=0.4?2:de<=1.5?3:4;
+    const range=b.high-b.low;
+    if(range<=0) F[o+6]=3;
+    else{
+      const up=(b.high-Math.max(b.open,b.close))/range, lw=(Math.min(b.open,b.close)-b.low)/range;
+      F[o+6]=(up>0.45&&lw>0.45)?2:up>0.45?0:lw>0.45?1:3;
+    }
+    const pb=bars[i-1], bodyPct=range>0?Math.abs(b.close-b.open)/range:0;
+    if(col[i]===1&&col[i-1]===0&&b.close>=pb.open&&b.open<=pb.close&&bodyPct>=0.5) F[o+7]=0;
+    else if(col[i]===0&&col[i-1]===1&&b.close<=pb.open&&b.open>=pb.close&&bodyPct>=0.5) F[o+7]=1;
+    else F[o+7]=2;
+    if(col[i]!==2) F[o+8]=col[i]*4+(streak[i]-1);
+    F[o+9]=Math.floor((b.time%86400000)/3600000/4);
+    const vr=a/ind.atr50[i]; F[o+10]=vr<0.8?0:vr<=1.2?1:2;
+    if(peers&&peers.length){
+      let s=0,c=0;
+      for(const p of peers){ const v=p.map.get(b.time); if(v!==undefined){ s+=Math.sign(p.r)*v; c++; } }
+      if(c>=2) F[o+11]=s>0.6?2:s<-0.6?0:1;
+    }
+    {
+      let lastH=null, lastL=null;
+      const jMin = Math.max(3, i-25);
+      for(let j=i-3;j>=jMin;j--){
+        const s=swingTbl[j];
+        if(s===1 && lastH===null) lastH=bars[j].high;
+        if(s===-1 && lastL===null) lastL=bars[j].low;
+        if(lastH!==null && lastL!==null) break;
+      }
+      if(lastH===null || lastL===null) F[o+12]=4;
+      else{ const rng=lastH-lastL; if(rng<=0) F[o+12]=4; else{ const p=(b.close-lastL)/rng; F[o+12]=p<0.15?0:p<0.5?1:p<0.85?2:3; } }
+    }
+    {
+      let h1=null,h2=null,l1=null,l2=null;
+      const jMin = Math.max(3, i-40);
+      for(let j=i-3;j>=jMin;j--){
+        const s=swingTbl[j];
+        if(s===1){ if(h1===null) h1=bars[j].high; else if(h2===null) h2=bars[j].high; }
+        else if(s===-1){ if(l1===null) l1=bars[j].low; else if(l2===null) l2=bars[j].low; }
+        if(h1!==null&&h2!==null&&l1!==null&&l2!==null) break;
+      }
+      if(h1===null||h2===null||l1===null||l2===null) F[o+13]=4;
+      else{ const hh=h1>h2, hl=l1>l2; if(hh&&hl) F[o+13]=2; else if(!hh&&!hl) F[o+13]=0; else F[o+13]=1; }
+    }
+    if(i>=5){ const d=(b.close-bars[i-5].close)/a; F[o+14]=d<-2?0:d<-0.5?1:d<=0.5?2:d<=2?3:4; }
+    if(i>=6){
+      let b1=0,b2=0;
+      for(let k=0;k<3;k++) b1+=Math.abs(bars[i-k].close-bars[i-k].open);
+      for(let k=3;k<6;k++) b2+=Math.abs(bars[i-k].close-bars[i-k].open);
+      const ratio=b2>1e-9?b1/b2:1;
+      F[o+15]=ratio<0.5?0:ratio<0.9?1:ratio<=1.1?2:ratio<=2?3:4;
+    }
+  }
+  for(let i=0;i<n-1;i++){
+    if(bars[i+1].time-bars[i].time>W*1.2) continue;
+    if(now!=null && bars[i+1].time+W>now) continue;
+    const c=col[i+1]; if(c!==2) y[i]=c;
+  }
+  return {F,valid,y,n,atr:ind.atr14,ind};
+}
+function labeledIdx(ds){
+  const out=[]; for(let i=0;i<ds.n;i++) if(ds.valid[i]&&ds.y[i]>=0) out.push(i);
+  return Int32Array.from(out);
+}
+const MB={U:null,D:null,FU:null,FD:null};
+function mineIdx(ds,idx){
+  const K=CFG.K, m=idx.length;
+  if(m<CFG.minSamplesForMine) return {rules:[],samples:m};
+  if(!MB.U){ MB.U=new Int32Array(KSZ); MB.D=new Int32Array(KSZ); MB.FU=new Int32Array(KSZ*K); MB.FD=new Int32Array(KSZ*K); }
+  MB.U.fill(0); MB.D.fill(0); MB.FU.fill(0); MB.FD.fill(0);
+  const U=MB.U,D=MB.D,FU=MB.FU,FD=MB.FD, vals=new Int32Array(NF);
+  for(let q=0;q<m;q++){
+    const i=idx[q], o=i*NF, f=Math.min(K-1,Math.floor(q*K/m)), up=ds.y[i]===1;
+    let nv=0;
+    for(let a=0;a<NF;a++){ const v=ds.F[o+a]; if(v>=0) vals[nv++]=(a<<4)|v; }
+    for(let a=0;a<nv;a++){
+      const ka=vals[a];
+      if(up){ U[ka]++; FU[f*KSZ+ka]++; } else { D[ka]++; FD[f*KSZ+ka]++; }
+      for(let b=a+1;b<nv;b++){
+        const kk=65536+((ka<<8)|vals[b]);
+        if(up){ U[kk]++; FU[f*KSZ+kk]++; } else { D[kk]++; FD[f*KSZ+kk]++; }
+      }
+    }
+  }
+  const rules=[];
+  for(let k=0;k<KSZ;k++){
+    const u=U[k], d=D[k], n=u+d; if(n<CFG.minN) continue;
+    const dirUp=u>=d, wins=dirUp?u:d;
+    const z=(wins-n/2)/Math.sqrt(n/4); if(z<CFG.zD) continue;
+    let fok=0;
+    for(let f=0;f<K;f++){
+      const fu=FU[f*KSZ+k], fd=FD[f*KSZ+k], fn=fu+fd, fwin=dirUp?fu:fd;
+      if(fn>=6&&fwin/fn>0.5) fok++;
+    }
+    if(fok<2) continue;
+    let grade="D";
+    if(z>=CFG.zA&&fok>=K-1) grade="A";
+    else if(z>=CFG.zB&&fok>=K-1) grade="B";
+    else if(z>=CFG.zC) grade="C";
+    let conds;
+    if(k<65536) conds=[[k>>4,k&15]];
+    else{ const kk=k-65536, h=kk>>8, l=kk&255; conds=[[h>>4,h&15],[l>>4,l&15]]; }
+    const pe0=(wins+0.5*CFG.K0)/(n+CFG.K0);
+    rules.push({k,conds,up:dirUp,n,wins,wr:wins/n,z,fok,grade,pe:0.5+(pe0-0.5)*0.75});
+  }
+  rules.sort((a,b)=>b.z-a.z);
+  return {rules:rules.slice(0,CFG.topRules),samples:m,total:rules.length};
+}
+function evalRulesByBlocks(rules, ds, blockIdxs){
+  const out = rules.map(()=>({n:0,w:0,blocks:blockIdxs.map(()=>({n:0,w:0}))}));
+  for(let bi=0;bi<blockIdxs.length;bi++){
+    const blk = blockIdxs[bi];
+    for(let q=0;q<blk.length;q++){
+      const i = blk[q], o = i*NF, yUp = ds.y[i]===1;
+      for(let ri=0;ri<rules.length;ri++){
+        const R = rules[ri];
+        let ok = true;
+        for(let c=0;c<R.conds.length;c++){ if(ds.F[o+R.conds[c][0]]!==R.conds[c][1]){ ok=false; break; } }
+        if(!ok) continue;
+        out[ri].n++;
+        const pr = out[ri].blocks[bi]; pr.n++;
+        if(yUp===R.up){ out[ri].w++; pr.w++; }
+      }
+    }
+  }
+  return out;
+}
+function classifyRuleWF(r){
+  const C = CFG.class;
+  const oosN = r.oosN||0, oosW = r.oosW||0;
+  if(r.n < CFG.minN) return "INSUFFICIENT";
+  if(oosN < CFG.minOosN) return "INSUFFICIENT";
+  const oosWR = oosW/oosN, inWR = r.wr;
+  const bc = r.blockConsistency||0, bCount = r.blockCount||0;
+  const needBlocks = Math.min(C.valBlocks, Math.max(1, Math.floor(bCount*0.66)));
+  if(r.n >= C.valTrainN && oosN >= C.valOosN && inWR >= C.valTrainWR && oosWR >= C.valOosWR && r.z >= C.valZ && bc >= needBlocks) return "VALIDATED";
+  if(inWR >= C.provTrainWR && oosWR >= C.provOosWR && oosN >= C.provOosN) return "PROVISIONAL";
+  if((oosN >= C.rejOosN && oosWR < C.rejOosWR) || (r.n >= C.rejTrainN && inWR < C.rejTrainWR)) return "REJECTED";
+  return "INSUFFICIENT";
+}
+function matchRules(rules,F,o){
+  let bu=null,bd=null,cu=0,cd=0;
+  for(let r=0;r<rules.length;r++){
+    const R=rules[r]; let ok=true;
+    for(let c=0;c<R.conds.length;c++){ if(F[o+R.conds[c][0]]!==R.conds[c][1]){ ok=false; break; } }
+    if(!ok) continue;
+    if(R.up){ cu++; if(!bu||R.pe>bu.pe) bu=R; } else { cd++; if(!bd||R.pe>bd.pe) bd=R; }
+  }
+  return {bu,bd,cu,cd};
+}
+function decideFromMatch(m){
+  if(!m.bu&&!m.bd) return null;
+  const up=!!m.bu&&(!m.bd||m.bu.pe>=m.bd.pe);
+  const best=up?m.bu:m.bd, opp=up?m.bd:m.bu;
+  let pe=best.pe; if(opp&&opp.pe>0.5) pe-=0.5*(opp.pe-0.5);
+  return {dir:up?"UP":"DOWN",rule:best,pe,support:up?m.cu:m.cd,opp:up?m.cd:m.cu,
+    buPE: m.bu?m.bu.pe:0.5, bdPE: m.bd?m.bd.pe:0.5};
+}
+function gradeOf(d){
+  let g=d.rule.grade;
+  if(g==="A"&&d.pe<0.55) g="B";
+  if(g==="B"&&d.pe<0.53) g="C";
+  return g;
+}
+function evalIdx(rules,ds,idx){
+  const out={A:[0,0],B:[0,0],C:[0,0],D:[0,0]};
+  for(let q=0;q<idx.length;q++){
+    const i=idx[q]; const d=decideFromMatch(matchRules(rules,ds.F,i*NF)); if(!d) continue;
+    const g=gradeOf(d); out[g][0]++; if((d.dir==="UP")===(ds.y[i]===1)) out[g][1]++;
+  }
+  return out;
+}
+function mineSymbolJob(ds){
+  const idx = labeledIdx(ds);
+  const counts = {VALIDATED:0, PROVISIONAL:0, REJECTED:0, INSUFFICIENT:0};
+  if(idx.length < CFG.minLabeledForMine)
+    return {rules:[], oos:null, samples:idx.length, counts, discoverN:0, valN:0, blocks:0};
+  const discoverPt = Math.floor(idx.length * (1 - CFG.oosFrac));
+  const discoverIdx = idx.subarray(0, discoverPt);
+  const valIdx = idx.subarray(discoverPt);
+  const discResult = mineIdx(ds, discoverIdx);
+  const discRules = discResult.rules;
+  const nBlocks = Math.min(CFG.wfBlocks, Math.max(1, Math.floor(valIdx.length / 12)));
+  const blocks = [];
+  if(nBlocks>0){
+    const bs = Math.floor(valIdx.length / nBlocks);
+    for(let b=0;b<nBlocks;b++){
+      const s = b*bs, e = b===nBlocks-1 ? valIdx.length : (b+1)*bs;
+      blocks.push(valIdx.subarray(s,e));
+    }
+  }
+  const oosByRule = evalRulesByBlocks(discRules, ds, blocks);
+  const statusMap = {}, oosMap = {};
+  for(let ri=0;ri<discRules.length;ri++){
+    const r = discRules[ri], ob = oosByRule[ri];
+    r.oosN = ob.n; r.oosW = ob.w; r.oosWR = ob.n ? ob.w/ob.n : null;
+    r.blockCount = ob.blocks.filter(b=>b.n>=3).length;
+    r.blockConsistency = ob.blocks.filter(b=>b.n>=3 && b.w/b.n>0.5).length;
+    r.status = classifyRuleWF(r);
+    statusMap[r.k] = r.status;
+    oosMap[r.k] = {n: r.oosN, w: r.oosW, bc: r.blockConsistency, bCount: r.blockCount};
+  }
+  const finalResult = mineIdx(ds, idx);
+  const finalRules = finalResult.rules;
+  for(const r of finalRules){
+    r.status = statusMap[r.k] || "INSUFFICIENT";
+    const o = oosMap[r.k];
+    r.oosN = o ? o.n : 0; r.oosW = o ? o.w : 0;
+    r.oosWR = r.oosN ? r.oosW/r.oosN : null;
+    r.blockConsistency = o ? o.bc : 0; r.blockCount = o ? o.bCount : 0;
+    counts[r.status]++;
+  }
+  const oos = evalIdx(finalRules, ds, valIdx);
+  return {rules: finalRules, oos, samples: idx.length, total: finalResult.total, counts,
+    discoverN: discoverIdx.length, valN: valIdx.length, blocks: nBlocks};
+}
+function ruleInstability(rule, bars, i, ind){
+  let count = 0;
+  const b = bars[i], range = b.high - b.low;
+  const a = (ind.atr14[i] || 1);
+  const has = f => rule.conds.some(c => c[0] === f);
+  if(has(0) || has(1) || has(8)){
+    const bp = range > 0 ? Math.abs(b.close - b.open)/range : 0;
+    if(bp < 0.15) count++;
+  }
+  if(has(2) && i >= 19){
+    const d = (b.close - bars[i-19].open)/a;
+    for(const bnd of [-4,-1.5,1.5,4]) if(Math.abs(d-bnd) < 0.35){ count++; break; }
+  }
+  if(has(3)){
+    let hi=-Infinity,lo=Infinity;
+    for(let k=Math.max(0,i-29);k<=i;k++){ if(bars[k].high>hi)hi=bars[k].high; if(bars[k].low<lo)lo=bars[k].low; }
+    if(hi>lo){
+      const p = (b.close-lo)/(hi-lo);
+      for(const bnd of [0.15,0.4,0.6,0.85]) if(Math.abs(p-bnd) < 0.06){ count++; break; }
+    }
+  }
+  if(has(4)){
+    const r = ind.rsi[i];
+    for(const bnd of [30,42,58,70]) if(Math.abs(r-bnd) < 2.5){ count++; break; }
+  }
+  if(has(5)){
+    const de = (b.close - ind.ema[i])/a;
+    for(const bnd of [-1.5,-0.4,0.4,1.5]) if(Math.abs(de-bnd) < 0.22){ count++; break; }
+  }
+  if(has(6) && range > 0){
+    const up = (b.high - Math.max(b.open,b.close))/range;
+    const lw = (Math.min(b.open,b.close) - b.low)/range;
+    if(Math.abs(up - 0.45) < 0.08 || Math.abs(lw - 0.45) < 0.08) count++;
+  }
+  if(has(10)){
+    const vr = a / (ind.atr50[i] || 1);
+    for(const bnd of [0.8, 1.2]) if(Math.abs(vr-bnd) < 0.08){ count++; break; }
+  }
+  return count;
+}
+const LBL={
+  c3:["RRR","RRG","RGR","RGG","GRR","GRG","GGR","GGG"],
+  c1:["R-ছোট","R-মাঝ","R-বড়","G-ছোট","G-মাঝ","G-বড়"],
+  trend:["⇊","↓","→","↑","⇈"], pos:["তলায়","নিচে","মাঝে","উপরে","চূড়ায়"],
+  rsi:["OS","low","mid","high","OB"], ema:["দূরে↓","↓","≈","↑","দূরে↑"],
+  wick:["UW","LW","BW","N"], engulf:["BU","BD","N"], vol:["lowV","midV","highV"], peer:["peer↓","peer–","peer↑"],
+  swing:["S.supp","supp","res","S.res","?"],
+  struct:["downtrend","ranging","uptrend","?","?"],
+  mom:["⇊","↓","~","↑","⇈"],
+  bodyx:["contract","slightC","same","expand","bigExp"]
+};
+function condText(f,v){
+  const nm=FNAMES[f];
+  if(nm==="streak") return (v>>2?"G":"R")+((v&3)+1)+((v&3)===3?"+":"");
+  if(nm==="hour") return (v*4)+"-"+(v*4+4)+"h";
+  return (LBL[nm]&&LBL[nm][v])||(nm+":"+v);
+}
+function ruleText(r){ return r.conds.map(c=>condText(c[0],c[1])).join(" + "); }
+/*ENGINE_END*/
+
+const S = {
+  running:false, biquoteUrl:CFG.biquoteUrl, selected:new Set(MARKETS),
+  candles:{}, signals:[], current:null, queued:null, settling:[],
+  lastFetchAt:{}, chartSymbol:null, searchTerm:"",
+  settings:{
+    leadTime:40, gradeLevel:2, maxGap:1,
+    forceFill:true, aggressiveFire:true, autoCalib:true,
+    noForcedOff:true, usePeer:true, strictStability:true,
+    sound:true, vibrate:true, autoRefresh:true
+  },
+  rules:{}, nret:{}, lastScan:null, lastFireEntryAt:0, lastDecisionBoundary:-1, prefetchBoundary:-1,
+  deciding:false, mining:false,
+  learnState:{running:false,done:0,total:0,phase:""},
+  liveScan:{phase:"—",done:0,total:0,pairs:{},ranked:[],at:0},
+  calib:{cache:null,dirty:true,lastRebuild:0}
+};
+
+const $=id=>document.getElementById(id);
+const $$=s=>document.querySelectorAll(s);
+const dec=s=>(s&&s.includes("JPY"))?3:5;
+const pipSize=s=>(s&&s.includes("JPY"))?0.01:0.0001;
+const fmtP=(s,p)=>(p==null||!isFinite(p))?"—":Number(p).toFixed(dec(s));
+const fmtPip=v=>(v==null||!isFinite(v))?"—":(v>0?"+":"")+Number(v).toFixed(1);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const isNum=v=>typeof v==="number"&&isFinite(v);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function esc(s){ const d=document.createElement("div"); d.textContent=String(s); return d.innerHTML; }
+function fmtClock(ts){ return ts?new Date(ts).toTimeString().split(" ")[0]:"—"; }
+function fmtTime(ts){ return ts?new Date(ts).toLocaleString("en-GB",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"—"; }
+function normalizeTime(t){
+  if(t==null)return null;
+  if(typeof t==="string"){ const n=Number(t); if(isFinite(n))t=n; else{ const d=new Date(t); return isNaN(d.getTime())?null:d.getTime(); } }
+  t=Number(t); if(!isFinite(t))return null;
+  if(t>1e8&&t<1e11) return t*1000;
+  if(t>=1e11&&t<1e14) return t;
+  return null;
+}
+function sessionAt(ts){ const h=new Date(ts).getUTCHours(); if(h>=12&&h<16)return"LDN_NY"; if(h>=7&&h<12)return"LONDON"; if(h>=16&&h<20)return"NY"; if(h>=0&&h<7)return"ASIA"; return"OFF"; }
+function currentSession(){ return sessionAt(Date.now()); }
+function nextBoundary(ts){ return Math.floor(ts/CFG.frameMs)*CFG.frameMs+CFG.frameMs; }
+function secIntoFrame(ts){ return Math.floor((ts%CFG.frameMs)/1000); }
+function getPrice(sym){ const c=S.candles[sym]; return c?.m5?.length?c.m5[c.m5.length-1].close:null; }
+function findBar(sym,t,tol){ tol=tol??CFG.candleMatchTolMs; const bars=S.candles[sym]?.m5||[]; let best=null,bd=Infinity; for(let i=bars.length-1;i>=0;i--){ const b=bars[i]; const d=Math.abs(b.time-t); if(d<bd&&d<=tol){ best=b; bd=d; } if(b.time<t-tol)break; } return best; }
+function log(lv,msg){ const box=$("log"); if(!box)return; const el=document.createElement("div"); el.className="ll"; el.innerHTML=`<span class="t">${fmtClock(Date.now())}</span><span class="lv ${lv}">${lv}</span><span class="msg">${esc(msg)}</span>`; box.appendChild(el); while(box.children.length>400)box.removeChild(box.firstChild); box.scrollTop=box.scrollHeight; }
+function toast(msg,type="i"){ const w=$("toasts"); if(!w)return; const el=document.createElement("div"); el.className="toast "+(type==="ok"||type==="o"?"ok":type==="err"||type==="e"?"err":type==="warn"||type==="w"?"warn":type==="flip"?"flip":""); el.textContent=msg; w.appendChild(el); setTimeout(()=>el.remove(),2800); }
+let audioCtx=null;
+function beep(f=880,d=0.15,t="sine"){ if(!S.settings.sound)return; try{ if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==="suspended")audioCtx.resume(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=t; o.frequency.value=f; o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(0.0001,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.11,audioCtx.currentTime+0.01); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+d); o.start(); o.stop(audioCtx.currentTime+d+0.02); }catch(e){} }
+function buzz(ms){ if(!S.settings.vibrate)return; try{ navigator.vibrate&&navigator.vibrate(ms);}catch(e){} }
+
+/* ═══ Calibration ═══ */
+function calibRebuild(){
+  const bands = {}; const exact = {};
+  let gN=0, gW=0, gL=0, gP=0;
+  const size = CFG.calib.size;
+  for(const s of S.signals){
+    if(s.phase!=="DONE" || s.settlementStatus!=="CONFIRMED") continue;
+    const rawSc = (s.rawScore!=null) ? s.rawScore : s.score;
+    if(rawSc==null) continue;
+    const sc = clamp(Math.round(rawSc),0,100);
+    const isWin = s.outcome==="WIN", isLoss = s.outcome==="LOSS";
+    const pips = s.pips || 0;
+    if(!exact[sc]) exact[sc]={n:0,w:0,l:0,pips:0};
+    exact[sc].n++; if(isWin) exact[sc].w++; else if(isLoss) exact[sc].l++; exact[sc].pips+=pips;
+    const lo = Math.floor(sc/size)*size, hi = lo+size;
+    const key = lo+"-"+hi;
+    if(!bands[key]) bands[key]={n:0,w:0,l:0,pips:0,lo,hi};
+    bands[key].n++; if(isWin) bands[key].w++; else if(isLoss) bands[key].l++; bands[key].pips+=pips;
+    gN++; if(isWin) gW++; else if(isLoss) gL++; gP+=pips;
+  }
+  S.calib.cache = {bands, exact, global:{n:gN,w:gW,l:gL,pips:gP}, at:Date.now(), size};
+  S.calib.dirty = false; S.calib.lastRebuild = Date.now();
+}
+function calibEnsure(){
+  if(S.calib.dirty || !S.calib.cache || (Date.now()-S.calib.lastRebuild)>20000) calibRebuild();
+  return S.calib.cache;
+}
+function calibLookup(rawScore){
+  const c = calibEnsure();
+  const size = CFG.calib.size;
+  const lo = Math.floor(clamp(rawScore,0,100)/size)*size, hi = lo+size;
+  const key = lo+"-"+hi;
+  let b = c.bands[key];
+  if(!b || b.n < CFG.calib.minN){
+    const lo2 = Math.max(0, lo-size), hi2 = Math.min(100, hi+size);
+    const pool = {n:0,w:0,l:0,pips:0,lo:lo2,hi:hi2};
+    for(let x=lo2; x<hi2; x+=size){
+      const k2 = x+"-"+(x+size);
+      const bx = c.bands[k2];
+      if(bx){ pool.n+=bx.n; pool.w+=bx.w; pool.l+=bx.l; pool.pips+=bx.pips; }
+    }
+    if(pool.n >= CFG.calib.minN){ b=pool; } else b = null;
+  }
+  if(!b) return null;
+  const decided = b.w + b.l;
+  const wr = decided ? b.w/decided : 0.5;
+  return {n:b.n, w:b.w, l:b.l, pips:b.pips, lo:b.lo, hi:b.hi, wr};
+}
+function calibDecide(rawScore, dir, pe){
+  const base = {dir, pe, score:rawScore, rawScore, action:"off", note:"", look:null};
+  if(!S.settings.autoCalib) return base;
+  const look = calibLookup(rawScore);
+  if(!look || look.n < CFG.calib.minN)
+    return {...base, action:"cold", note:`❄ শেখা হয়নি`, look};
+  const w = look.w, l = look.l, n = w + l;
+  if(n < CFG.calib.minN) return {...base, action:"cold", note:"❄", look};
+  const wr = w/n;
+  const wLB = wilsonLB(w, n); const lLB = wilsonLB(l, n); const wUB = wilsonUB(w, n);
+  const bandTxt = `${look.lo}-${look.hi}%`;
+  const trust = Math.min(CFG.calib.trustCap, n / CFG.calib.trustN);
+  if(lLB >= CFG.calib.flipLB && n >= CFG.calib.minNStrong){
+    const newDir = dir==="UP"?"DOWN":"UP";
+    const flippedWR = l/n; const flippedWLB = wilsonLB(l, n);
+    const target = clamp(0.50 + (flippedWR - 0.50) * trust * 0.8, 0.50, CFG.calib.flipPECap);
+    const newPe = clamp(Math.max(target, 0.50 + (flippedWLB - 0.50) * 0.9), 0.50, CFG.calib.flipPECap);
+    return {...base, dir:newDir, pe:newPe, score:Math.round(newPe*100),
+      action:"flip", note:`↺ ফ্লিপ (loss-LB ${(lLB*100).toFixed(0)}%)`, look};
+  }
+  if(wUB <= CFG.calib.weakUB && n >= CFG.calib.minN){
+    const newPe = clamp(pe*0.5 + wr*0.5, 0.51, pe);
+    return {...base, pe:newPe, score:Math.round(newPe*100),
+      action:"weak", note:`↓ দুর্বল`, look};
+  }
+  if(wLB >= CFG.calib.boostLB && n >= CFG.calib.minN){
+    const postWins = w + CFG.calib.priorWins; const postTotal = n + CFG.calib.priorTotal;
+    const posterior = postWins / postTotal;
+    const newPe = clamp(pe*(1-trust) + posterior*trust, pe, CFG.calib.boostPECap);
+    return {...base, pe:newPe, score:Math.round(newPe*100),
+      action:"boost", note:`↑ বুস্ট (LB ${(wLB*100).toFixed(0)}% n${n})`, look};
+  }
+  return {...base, action:"ok", note:`${bandTxt}`, look};
+}
+
+/* ═══ Live scoring — NO filters, always returns a candidate if rules match ═══ */
+function scoreLive(sym,nretNow,now,B){
+  const bars=S.candles[sym]?.m5;
+  if(!bars||bars.length<CFG.minBarsMine)return{sym,err:`ডেটা কম (${bars?bars.length:0}/${CFG.minBarsMine})`};
+  const last=bars[bars.length-1];
+  if(Math.abs(last.time-(B-CANDLE_MS))>1000)return{sym,err:"ডেটা পুরোনো"};
+  let P=S.rules[sym];
+  if(!P||!P.rules.length){
+    if(bars.length>=CFG.minBarsMine){
+      try{
+        refreshNret(sym);
+        const peerDefs=S.settings.usePeer?computePeerDefs(sym,S.nret):[];
+        const peers=peerDefs.map(d=>({map:S.nret[d.sym],r:d.r})).filter(p=>p.map);
+        const ds0=buildDataset(bars,peers,Date.now());
+        const job=mineSymbolJob(ds0);
+        S.rules[sym]={rules:job.rules,oos:job.oos,samples:job.samples,total:job.total||0,counts:job.counts,peerDefs,minedAt:Date.now(),bars:bars.length};
+        P=S.rules[sym];
+      }catch(e){ return{sym,err:"নিয়ম নেই"}; }
+    }
+    if(!P||!P.rules.length)return{sym,err:"নিয়ম তৈরি হয়নি"};
+  }
+  const peers=(P.peerDefs||[]).map(d=>({map:nretNow[d.sym],r:d.r})).filter(p=>p.map);
+  const n=bars.length;
+  const ds=buildDataset(bars,peers,null,n-3);
+  if(!ds.valid[n-1])return{sym,err:"অবৈধ"};
+  const d=decideFromMatch(matchRules(P.rules, ds.F, (n-1)*NF));
+  if(!d) return {sym, err:"ম্যাচ নেই"};
+
+  const o=P.oos;
+  let oosN=0, oosW=0, oosRate=null;
+  if(o){
+    const nAB=o.A[0]+o.B[0], wAB=o.A[1]+o.B[1];
+    const nAll=nAB+o.C[0]+o.D[0], wAll=wAB+o.C[1]+o.D[1];
+    oosN = nAB>=CFG.minOosN ? nAB : nAll;
+    oosW = nAB>=CFG.minOosN ? wAB : wAll;
+    oosRate = oosN ? oosW/oosN : null;
+  }
+  let pe = d.pe;
+  if(oosRate!=null && oosN>=CFG.minOosN){
+    const w = Math.min(0.45, oosN/200);
+    pe = pe*(1-w) + oosRate*w;
+  }
+  const dd = {...d, pe};
+  let grade = gradeOf(dd);
+  if(d.rule.status === "PROVISIONAL" && grade === "A") grade = "B";
+
+  let instability = 0;
+  if(S.settings.strictStability){
+    try{ instability = ruleInstability(d.rule, bars, n-1, ds.ind); }catch(e){ instability = 0; }
+    if(instability >= 3 && grade === "A") grade = "C";
+    else if(instability >= 2 && grade === "A") grade = "B";
+    else if(instability >= 3 && grade === "B") grade = "C";
+    else if(instability >= 2 && grade === "C") grade = "D";
+  }
+  let distrust=false, oosTxt="—";
+  if(o){
+    if(oosN) oosTxt = `${(oosRate*100).toFixed(0)}%/${oosN}`;
+    if(oosN>0 && (oosRate-0.5)/Math.sqrt(0.25/oosN) < -1.0) distrust=true;
+  }
+  if(distrust && (grade==="A"||grade==="B"||grade==="C")) grade="D";
+  const a=ds.atr[n-1], body=Math.abs(last.close-last.open)/(a||1);
+  const fdep=d.rule.conds.some(c=>c[0]===0||c[0]===1||c[0]===6||c[0]===7||c[0]===8);
+  if(fdep && body<0.25) pe -= 0.01;
+  const rawScore = Math.round(pe*100);
+
+  let finalDir=d.dir, finalPe=pe, score=rawScore;
+  let calibAction="off", calibNote="", flipped=false, calibLook=null;
+  try{
+    const adj = calibDecide(rawScore, d.dir, pe);
+    calibAction = adj.action; calibNote = adj.note||""; calibLook = adj.look;
+    if(adj.action==="flip"){
+      finalDir = adj.dir; finalPe = adj.pe; score = adj.score; flipped = true;
+      const dd2 = {pe:finalPe, rule:d.rule};
+      grade = gradeOf(dd2);
+      if(d.rule.status === "PROVISIONAL" && grade === "A") grade = "B";
+      if(grade==="A"&&finalPe<0.55) grade="B";
+      if(grade==="B"&&finalPe<0.53) grade="C";
+    } else if(adj.action==="weak"){
+      finalPe = adj.pe; score = adj.score;
+      if(grade==="A") grade="B"; else if(grade==="B") grade="C";
+    } else if(adj.action==="boost"){
+      finalPe = adj.pe; score = adj.score;
+    }
+  }catch(e){}
+
+  return {sym,dir:finalDir,origDir:d.dir,rule:d.rule,pe:finalPe,score,rawScore,
+    grade,support:d.support,opp:d.opp,
+    ruleText:ruleText(d.rule),ruleStatus:d.rule.status||"INSUFFICIENT",
+    oosTxt,distrust,body:+body.toFixed(2),instability,
+    flipped, calibAction, calibNote, calibLook,
+    F:Array.from(ds.F.subarray((n-1)*NF,n*NF))};
+}
+const GRANK={A:3,B:2,C:1,D:0};
+function gradeLevelTxt(v){ return v===1?"A":v===2?"A+B":"A+B+C"; }
+
+async function ensureFresh(){
+  const stale=[...S.selected].filter(s=>(Date.now()-(S.lastFetchAt[s]||0))>CFG.freshForDecisionMs);
+  if(!stale.length)return;
+  await Promise.race([
+    (async()=>{ for(const s of stale){ try{ await fetchSymbol(s,{skipCache:true,light:true,forceFetch:true}); }catch(e){} } })(),
+    sleep(11000)
+  ]);
+}
+
+async function tryGenerate(){
+  if(!S.running||S.deciding||S.learnState.running)return;
+  const now=Date.now(), entryAt=nextBoundary(now), remain=(entryAt-now)/1000, lead=S.settings.leadTime;
+  if(S.lastDecisionBoundary===entryAt)return;
+  if(S.queued&&S.queued.entryAt===entryAt)return;
+  if(S.current&&S.current.entryAt===entryAt)return;
+  if(remain>lead||remain<CFG.minRemainS)return;
+  S.deciding=true; S.lastDecisionBoundary=entryAt;
+  try{
+    S.liveScan.phase = "ফ্রেশ ডেটা";
+    await ensureFresh();
+    const t2=Date.now();
+    if(nextBoundary(t2)!==entryAt||(entryAt-t2)/1000<CFG.minRemainS){
+      log("w","⌛ দেরি — স্কিপ");
+      S.lastScan={time:t2,entryAt,cands:[],counts:{late:1},decision:"দেরি — স্কিপ"};
+      return;
+    }
+    const nretNow={};
+    for(const s of S.selected){ const bars=S.candles[s]?.m5; if(bars&&bars.length>150)nretNow[s]=buildNret(bars,buildIndicators(bars)); }
+    const cands=[], counts={};
+    S.liveScan.phase = "স্কোরিং"; S.liveScan.done = 0;
+    S.liveScan.total = S.selected.size; S.liveScan.pairs = {}; S.liveScan.at = t2;
+    let si = 0;
+    for(const sym of S.selected){
+      si++;
+      S.liveScan.phase = `স্কোরিং · ${sym}`; S.liveScan.done = si;
+      const bars = S.candles[sym]?.m5?.length||0;
+      let c; try{ c=scoreLive(sym,nretNow,t2,entryAt); }catch(e){ c={sym,err:"ত্রুটি "+e.message}; }
+      if(c.err){
+        counts[c.err]=(counts[c.err]||0)+1;
+        S.liveScan.pairs[sym]={status:"bad",note:c.err,bars};
+      } else {
+        cands.push(c);
+        S.liveScan.pairs[sym]={status:"ok",bars,dir:c.dir,grade:c.grade,pe:c.pe,
+          score:c.score,rawScore:c.rawScore,rule:c.ruleText,support:c.support,instability:c.instability,
+          flipped:c.flipped,calibNote:c.calibNote,calibAction:c.calibAction,ruleStatus:c.ruleStatus};
+      }
+    }
+    S.liveScan.phase = "র‍্যাঙ্কিং";
+    cands.sort((a,b)=>(GRANK[b.grade]-GRANK[a.grade])||(b.pe-a.pe));
+    S.liveScan.ranked = cands.map((c,i)=>({rank:i+1,sym:c.sym,dir:c.dir,grade:c.grade,pe:c.pe,score:c.score,flipped:c.flipped}));
+    const gap=S.lastFireEntryAt?Math.round((entryAt-S.lastFireEntryAt)/CANDLE_MS):99;
+    const offBlock=S.settings.noForcedOff&&currentSession()==="OFF";
+    const gapForce=S.settings.forceFill && gap>=S.settings.maxGap && !offBlock;
+    const aggForce=S.settings.aggressiveFire && !offBlock;
+    const forceOK=gapForce||aggForce;
+    const lvl=S.settings.gradeLevel;
+    const normal={A:true,B:lvl>=2,C:lvl>=3,D:false};
+    // ★ v22.8: always pick the best candidate
+    let chosen=null;
+    for(const c of cands){ if(normal[c.grade]){ c.forced=false; chosen=c; break; } }
+    if(!chosen && cands.length){ chosen=cands[0]; chosen.forced=true; }
+    const top=cands.slice(0,6).map(c=>({sym:c.sym,dir:c.dir,grade:c.grade,pe:c.pe,score:c.score,rawScore:c.rawScore,
+      rule:c.ruleText,support:c.support,instability:c.instability,flipped:c.flipped,
+      calibNote:c.calibNote,calibAction:c.calibAction,ruleStatus:c.ruleStatus}));
+    let decision;
+    if(chosen){
+      decision=`${chosen.sym} ${chosen.dir} · ${chosen.grade}${chosen.flipped?" ↺":""}${chosen.forced?" (F)":""}`;
+    } else {
+      decision=`স্কিপ — কোনো ম্যাচ নেই`;
+    }
+    S.lastScan={time:t2,entryAt,cands:top,counts,decision,gap};
+    S.liveScan.phase = chosen ? `ফায়ার · ${chosen.sym}` : "স্কিপ";
+    if(chosen){
+      const rawTxt = (chosen.rawScore!=null && chosen.rawScore!==chosen.score) ? ` (raw ${chosen.rawScore}%)` : "";
+      log("o",`🎯 PICK ${chosen.sym} ${chosen.dir} ${chosen.grade}${chosen.flipped?" ↺":""}${chosen.forced?" (F)":""} · ${chosen.score}%${rawTxt} · ${chosen.ruleText}`);
+      createSignal(chosen,entryAt);
+    } else log("i","⏭ "+decision);
+    renderScan();
+  } finally { S.deciding=false; }
+}
+
+/* ═══ Signal ═══ */
+function createSignal(c,entryAt){
+  const now=Date.now(), sym=c.sym;
+  const sig={
+    id:now+"_"+sym+"_"+Math.random().toString(36).slice(2,6),
+    symbol:sym, direction:c.dir, origDir:c.origDir||c.dir,
+    grade:c.grade, forced:!!c.forced, pe:c.pe,
+    score:c.score!=null?c.score:Math.round(c.pe*100),
+    rawScore:(c.rawScore!=null?c.rawScore:Math.round(c.pe*100)),
+    fireSource:c.grade+(c.forced?"·F":"")+(c.flipped?"·↺":""),
+    flipped:!!c.flipped, calibAction:c.calibAction||"off", calibNote:c.calibNote||"",
+    rule:c.ruleText, ruleStatus:c.ruleStatus||"INSUFFICIENT", support:c.support, opp:c.opp,
+    ruleN:c.rule.n, ruleWR:c.rule.wr, ruleZ:+c.rule.z.toFixed(2), oosTxt:c.oosTxt, session:currentSession(),
+    instability:c.instability||0,
+    createdAt:now, entryAt, expiryAt:entryAt+CFG.duration*1000, entryCandleTime:entryAt, duration:CFG.duration,
+    enteredAt:null, entryPrice:null, entryPriceSource:null, exitedAt:null, expiryPrice:null, expiryPriceSource:null,
+    pnl:null, pips:null, outcome:"PENDING", settlementStatus:"PENDING", phase:"WAIT_ENTRY", lastPrice:getPrice(sym)
+  };
+  const queueIt=!!(S.current&&S.current.phase!=="DONE"&&S.current.entryAt!==entryAt&&S.current.expiryAt>now+1000);
+  if(queueIt)S.queued=sig; else{ S.current=sig; S.chartSymbol=sym; }
+  S.signals.push(sig);
+  if(S.signals.length > CFG.maxSignalsInMem){
+    const live = S.signals.filter(s=>s.phase!=="DONE");
+    const done = S.signals.filter(s=>s.phase==="DONE").slice(-400);
+    S.signals = live.concat(done).sort((a,b)=>a.createdAt-b.createdAt);
+  }
+  S.lastFireEntryAt=entryAt;
+  saveActive();
+  const em = c.flipped?"↺ ":"";
+  toast(`${queueIt?"⏭ ":""}${em}[${sig.fireSource}] ${sym} ${c.dir==="UP"?"▲":"▼"} ~${sig.score}%`, c.flipped?"flip":(c.forced?"warn":"ok"));
+  beep(c.flipped?720:(c.grade==="A"?1100:c.grade==="B"?900:600),0.13); buzz(40);
+  forceRender();
+}
+function promoteQueued(){
+  if(!S.queued)return false;
+  const now=Date.now();
+  if(S.queued.entryAt<now-30000){ S.queued=null; saveActive(); return false; }
+  S.current=S.queued; S.queued=null; S.chartSymbol=S.current.symbol;
+  saveActive(); forceRender(); return true;
+}
+function enterTrade(sig,now){
+  let px=null,src="live";
+  const bar=findBar(sig.symbol,sig.entryCandleTime,30000);
+  if(bar&&isNum(bar.open)){ px=bar.open; src="candle.open@"+fmtClock(bar.time); }
+  else{
+    const bars=S.candles[sig.symbol]?.m5||[];
+    for(let i=bars.length-1;i>=0;i--){ if(bars[i].time<sig.entryCandleTime-500&&isNum(bars[i].close)){ px=bars[i].close; src="prevClose@"+fmtClock(bars[i].time); break; } }
+    if(!isNum(px))px=getPrice(sig.symbol);
+  }
+  sig.entryPrice=isNum(px)?px:null; sig.entryPriceSource=src; sig.enteredAt=now; sig.phase="IN_TRADE";
+  log("o",`💚 এন্ট্রি [${sig.fireSource}] ${sig.symbol} ${sig.direction} @ ${fmtP(sig.symbol,sig.entryPrice)}`);
+  toast("এন্ট্রি: "+sig.symbol,"ok"); beep(1050,0.15); buzz([50,30,50]);
+  saveActive(); forceRender();
+}
+function settleTrade(sig,exitPx,source){
+  if(sig.phase==="DONE")return;
+  const entryBar=findBar(sig.symbol,sig.entryCandleTime,30000);
+  if(entryBar&&isNum(entryBar.open)&&isNum(entryBar.close)&&entryBar.time+CANDLE_MS<=Date.now()+2000){
+    sig.entryPrice=entryBar.open; sig.entryPriceSource="candle.open@"+fmtClock(entryBar.time);
+    exitPx=entryBar.close; source="candle.close@"+fmtClock(entryBar.time);
+  }
+  if(!isNum(sig.entryPrice)){ sig.outcome="DATA_ERROR"; sig.settlementStatus="DATA_ERROR"; sig.phase="DONE"; sig.settledAt=Date.now(); saveState(); forceRender(); return; }
+  if(!isNum(exitPx)){ sig.outcome="UNRESOLVED"; sig.settlementStatus="UNRESOLVED"; sig.phase="DONE"; sig.settledAt=Date.now(); saveState(); forceRender(); return; }
+  const delta=exitPx-sig.entryPrice;
+  const pips=(sig.direction==="UP"?delta:-delta)/pipSize(sig.symbol);
+  let outcome; if(delta===0)outcome="TIE"; else if(delta>0)outcome=sig.direction==="UP"?"WIN":"LOSS"; else outcome=sig.direction==="DOWN"?"WIN":"LOSS";
+  sig.expiryPrice=exitPx; sig.expiryPriceSource=source; sig.exitedAt=Date.now(); sig.pnl=delta; sig.pips=pips; sig.outcome=outcome;
+  sig.settlementStatus=(source&&String(source).startsWith("candle.close"))?"CONFIRMED":"UNRESOLVED";
+  sig.phase="DONE"; sig.settledAt=Date.now();
+  const emoji=outcome==="WIN"?"✅":outcome==="LOSS"?"❌":"➖";
+  log(outcome==="WIN"?"o":outcome==="LOSS"?"e":"i",`${emoji} [${sig.fireSource}] ${sig.symbol} ${sig.direction} → ${fmtPip(pips)}p ${outcome}`);
+  if(outcome==="WIN"){ beep(1300,0.12); setTimeout(()=>beep(1550,0.14),120); buzz(70); }
+  else if(outcome==="LOSS"){ beep(280,0.28,"sawtooth"); buzz([90,50,90]); }
+  toast(`${emoji} ${sig.symbol} ${outcome} ${fmtPip(pips)}p`,outcome==="WIN"?"ok":outcome==="LOSS"?"err":"warn");
+  const doneId=sig.id;
+  if(S.current&&S.current.id===doneId){
+    if(S.queued)promoteQueued();
+    else setTimeout(()=>{ if(S.current&&S.current.id===doneId){ S.current=null; forceRender(); } },3000);
+  }
+  S.calib.dirty = true;
+  saveState(); forceRender(); renderStats(); renderHistory();
+}
+function stepSignal(sig,now){
+  if(!sig||sig.phase==="DONE")return;
+  const price=getPrice(sig.symbol); if(price)sig.lastPrice=price;
+  if(sig.phase==="WAIT_ENTRY"){ if(now>=sig.entryAt){ enterTrade(sig,now); fetchSymbol(sig.symbol,{skipCache:true,light:true,forceFetch:true,bypassGap:true}).catch(()=>{}); } return; }
+  if(sig.phase==="IN_TRADE"){
+    if(now<sig.expiryAt){ if(sig.expiryAt-now<=20000&&(!sig._lastKick||now-sig._lastKick>2000)){ sig._lastKick=now; fetchSymbol(sig.symbol,{skipCache:true,light:true,forceFetch:true,bypassGap:true}).catch(()=>{}); } return; }
+    const bar=findBar(sig.symbol,sig.entryCandleTime,30000);
+    const closed=bar&&(bar.time+CANDLE_MS<=now+2000);
+    const fetchedAfter=(S.lastFetchAt[sig.symbol]||0)>=sig.expiryAt+1000;
+    if(closed&&isNum(bar.close)&&(fetchedAfter||now-sig.expiryAt>CFG.exitGraceMs)){ settleTrade(sig,bar.close,"candle.close@"+fmtClock(bar.time)); return; }
+    if(now-sig.expiryAt<CFG.exitTimeoutMs){ if(!sig._lastKick||now-sig._lastKick>CFG.exitRetryGapMs){ sig._lastKick=now; fetchSymbol(sig.symbol,{skipCache:true,light:true,forceFetch:true,bypassGap:true}).catch(()=>{}); } return; }
+    if(bar&&isNum(bar.close))settleTrade(sig,bar.close,"candle.close@"+fmtClock(bar.time)+"/timeout");
+    else if(isNum(sig.lastPrice))settleTrade(sig,sig.lastPrice,"live.fallback");
+    else settleTrade(sig,null,"no_exit");
+  }
+}
+function tickAll(now){
+  if(S.queued&&now>=S.queued.entryAt){
+    if(S.current&&S.current.phase!=="DONE")S.settling.push(S.current);
+    S.current=null; promoteQueued(); saveActive();
+  }
+  if(S.settling.length){ S.settling.forEach(x=>stepSignal(x,now)); S.settling=S.settling.filter(x=>x.phase!=="DONE"); }
+  if(S.current)stepSignal(S.current,now);
+}
+
+/* ═══ Network ═══ */
+const NET={backoffUntil:0,consecutiveErrors:0,softFails:0,lastError:null,totalRequests:0,totalErrors:0,lastSuccessAt:0};
+function netPenalty(ms,reason){ NET.backoffUntil=Math.max(NET.backoffUntil,Date.now()+ms); NET.consecutiveErrors++; NET.lastError=reason; NET.totalErrors++; updateNetUI(); }
+function netReset(){ NET.backoffUntil=0; NET.consecutiveErrors=0; NET.softFails=0; NET.lastError=null; updateNetUI(); }
+function netOk(){ NET.consecutiveErrors=0; NET.softFails=0; NET.lastSuccessAt=Date.now(); }
+function inBackoff(){ return Date.now()<NET.backoffUntil; }
+function backoffRemainMs(){ return Math.max(0,NET.backoffUntil-Date.now()); }
+let lastReqAt=0, fetchLock=Promise.resolve();
+function buildUrl(tpl,sym){
+  const pair=sym.slice(0,3)+"/"+sym.slice(3);
+  return tpl.replace(/\{SYMBOL\}/g,sym).replace(/\{symbol\}/g,sym.toLowerCase()).replace(/\{PAIR\}/g,pair).replace(/\{pair\}/g,pair.toLowerCase());
+}
+function parseResp(j){
+  if(!j)return null;
+  for(const a of [j.bars,j.data,j.candles,j.result,j.ohlc,j.result?.data,j.data?.candles]) if(Array.isArray(a)&&a.length)return a;
+  if(Array.isArray(j)&&j.length)return j; return null;
+}
+function normBar(b){
+  if(Array.isArray(b))return{time:normalizeTime(b[0]),open:+b[1],high:+b[2],low:+b[3],close:+b[4]};
+  return{time:normalizeTime(b.time??b.t??b.timestamp??b.ts??b.openTime??b.open_time),open:+(b.open??b.o),high:+(b.high??b.h),low:+(b.low??b.l),close:+(b.close??b.c)};
+}
+function finalizeBars(arr){
+  const norm=arr.map(normBar).filter(b=>b.time&&isNum(b.open)&&isNum(b.close)&&isNum(b.high)&&isNum(b.low)&&b.open>0);
+  const byT=new Map(); for(const b of norm){ b.time=Math.floor(b.time/CANDLE_MS)*CANDLE_MS; byT.set(b.time,b); }
+  return [...byT.values()].sort((a,b)=>a.time-b.time)
+    .filter(b=>b.time<=Date.now()+CANDLE_MS)
+    .map(b=>({time:b.time,open:b.open,close:b.close,high:Math.max(b.high,b.open,b.close,b.low),low:Math.min(b.low,b.open,b.close,b.high)}));
+}
+function parseYahoo(j){
+  const err=j&&j.chart&&j.chart.error; if(err)throw new Error("yahoo: "+(err.description||err.code||"error"));
+  const r=j&&j.chart&&j.chart.result&&j.chart.result[0]; if(!r)return null;
+  const ts=r.timestamp, q=r.indicators&&r.indicators.quote&&r.indicators.quote[0];
+  if(!Array.isArray(ts)||!q||!Array.isArray(q.open))return null;
+  const out=[];
+  for(let i=0;i<ts.length;i++){
+    const o=q.open[i],h=q.high[i],l=q.low[i],c=q.close[i];
+    if(o==null||h==null||l==null||c==null||!isFinite(o)||!isFinite(h)||!isFinite(l)||!isFinite(c))continue;
+    out.push([ts[i],o,h,l,c]);
+  }
+  return out;
+}
+function yahooTarget(sym,range,host){ return `https://${host}.finance.yahoo.com/v8/finance/chart/${sym}=X?interval=5m&range=${range}&_t=${Date.now()}`; }
+function biquoteTarget(sym,light){
+  let u=buildUrl((S.biquoteUrl||CFG.biquoteUrl).replace(/interval=1m/i,"interval=5m"),sym);
+  if(light)u=u.replace(/limit=\d+/i,"limit=60"); return u;
+}
+const PX={
+  cors:u=>"https://corsproxy.io/?url="+encodeURIComponent(u),
+  aorg:u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
+  ctabs:u=>"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u)
+};
+const ROUTES=[
+  {id:"biquote",url:(s,r,l)=>biquoteTarget(s,l),parse:parseResp},
+  {id:"biquote+cors",url:(s,r,l)=>PX.cors(biquoteTarget(s,l)),parse:parseResp},
+  {id:"biquote+aorg",url:(s,r,l)=>PX.aorg(biquoteTarget(s,l)),parse:parseResp},
+  {id:"yahoo",url:(s,r)=>yahooTarget(s,r,"query1"),parse:parseYahoo},
+  {id:"yahoo+cors",url:(s,r)=>PX.cors(yahooTarget(s,r,"query1")),parse:parseYahoo},
+  {id:"yahoo+aorg",url:(s,r)=>PX.aorg(yahooTarget(s,r,"query2")),parse:parseYahoo}
+];
+const ROUTE_ST={}; for(const r of ROUTES)ROUTE_ST[r.id]={fail:0,cool:0,lastOk:0};
+let lastRouteUsed=null;
+function routeOrder(){
+  const now=Date.now();
+  const ready=ROUTES.filter(r=>ROUTE_ST[r.id].cool<=now).sort((a,b)=>ROUTE_ST[b.id].lastOk-ROUTE_ST[a.id].lastOk);
+  if(ready.length)return ready;
+  return ROUTES.slice().sort((a,b)=>ROUTE_ST[a.id].cool-ROUTE_ST[b.id].cool).slice(0,3);
+}
+function routeOk(id){ const st=ROUTE_ST[id]; st.fail=0; st.cool=0; st.lastOk=Date.now(); }
+function routeFail(id){ const st=ROUTE_ST[id]; st.fail++; st.cool=Date.now()+Math.min(90000,4000*Math.pow(2,Math.min(5,st.fail-1))); }
+async function tryRoutes(sym,range,light){
+  const minOk=light?3:CFG.minBarsDataOK;
+  let lastErr=null, allSoft=true;
+  for(const rt of routeOrder()){
+    NET.totalRequests++;
+    const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),light?CFG.routeTimeoutMs:CFG.routeTimeoutFullMs);
+    try{
+      const res=await fetch(rt.url(sym,range,light),{signal:ctrl.signal,cache:"no-store"});
+      if(!res.ok)throw new Error("HTTP "+res.status);
+      const txt=await res.text();
+      let j; try{ j=JSON.parse(txt); }catch(_){ throw new Error("bad json"); }
+      if(j&&typeof j.contents==="string"){ try{ j=JSON.parse(j.contents); }catch(_){} }
+      const arr=rt.parse(j); if(!arr||!arr.length){ const e=new Error("empty"); e.soft=true; throw e; }
+      const bars=finalizeBars(arr);
+      if(bars.length<minOk){ const e=new Error("thin "+bars.length); e.soft=true; throw e; }
+      routeOk(rt.id);
+      if(lastRouteUsed!==rt.id){ log("i","🔀 source: "+rt.id); lastRouteUsed=rt.id; }
+      netOk(); return {bars,route:rt.id};
+    }catch(e){ lastErr=e; if(!e.soft){ allSoft=false; routeFail(rt.id); NET.totalErrors++; } }
+    finally{ clearTimeout(to); }
+  }
+  const err=new Error("all sources failed: "+(lastErr?lastErr.message:"?")); err.kind=allSoft?"empty":"net";
+  if(allSoft){ NET.softFails = (NET.softFails||0) + 1; if(NET.softFails >= 3){ netPenalty(15000,"soft-fails"); NET.softFails = 0; } }
+  throw err;
+}
+async function fetchBars(sym,opts={}){
+  const light=!!opts.light; const ranges=light?["1d"]:CFG.fullRanges;
+  let lastErr=null;
+  for(const r of ranges){ try{ return await tryRoutes(sym,r,light); }catch(e){ lastErr=e; } }
+  if(lastErr&&lastErr.kind==="net") netPenalty(Math.min(15000,2000*Math.pow(1.8,Math.min(5,NET.consecutiveErrors))),"all failed");
+  throw lastErr||new Error("fetch failed");
+}
+function symStatus(sym){
+  const c=S.candles[sym]; if(!c)return{state:"idle",msg:"—"};
+  const age=Date.now()-(S.lastFetchAt[sym]||0), bars=c.m5?.length||0;
+  if(c.error){ if(bars&&age<CFG.hardStaleMs)return{state:"warn",msg:"STALE"}; return{state:"err",msg:"ERR"}; }
+  if(bars){
+    const barAge=Date.now()-c.m5[c.m5.length-1].time;
+    if(barAge>CANDLE_MS*3+60000&&age<CFG.cacheFreshMs)return{state:"warn",msg:"CLOSED?"};
+    if(age<12000)return{state:"ok",msg:"LIVE"};
+    if(age<CFG.cacheFreshMs)return{state:"ok",msg:bars+"b"};
+    if(age<CFG.hardStaleMs)return{state:"warn",msg:"STALE"};
+    return{state:"warn",msg:"OLD"};
+  }
+  return{state:"err",msg:"NO DATA"};
+}
+async function fetchSymbol(sym,opts={}){
+  if(!opts.skipCache){ const age=Date.now()-(S.lastFetchAt[sym]||0); const c=S.candles[sym]; if(age<CFG.cacheFreshMs&&c?.m5?.length)return c.m5; }
+  if(inBackoff()&&!opts.forceFetch){ const c=S.candles[sym]; if(c?.m5?.length)return c.m5; throw new Error("backoff"); }
+  const doFetch=async()=>{
+    try{
+      const prev0=S.candles[sym]?.m5||[];
+      const lastT0=prev0.length?prev0[prev0.length-1].time:0;
+      const canLight=opts.light===true||(opts.full!==true&&prev0.length>=CFG.minBarsFull&&(Date.now()-lastT0)<20*3600*1000);
+      let r;
+      try{ r=await fetchBars(sym,{light:canLight}); }
+      catch(e){ if(canLight&&e.kind==="empty")r=await fetchBars(sym,{light:false}); else throw e; }
+      S.lastFetchAt[sym]=Date.now();
+      const old=S.candles[sym]||{}, byTime=new Map();
+      for(const b of (old.m5||[]))byTime.set(b.time,b);
+      for(const b of r.bars)byTime.set(b.time,b);
+      const merged=[...byTime.values()].sort((a,b)=>a.time-b.time).slice(-CFG.maxCandles);
+      S.candles[sym]={m5:merged,error:null,src:r.route};
+      return merged;
+    }catch(e){
+      const old=S.candles[sym]||{}; S.candles[sym]={...old,m5:old.m5||[],error:e.message}; throw e;
+    }
+  };
+  if(opts.bypassGap)return doFetch();
+  fetchLock=fetchLock.catch(()=>{}).then(async()=>{ const wait=lastReqAt+CFG.reqGap-Date.now(); if(wait>0)await sleep(wait); lastReqAt=Date.now(); await doFetch(); });
+  await fetchLock.catch(()=>{});
+  const c=S.candles[sym]; if(c?.error&&!(c.m5?.length))throw new Error(c.error);
+  return c?.m5||[];
+}
+
+/* ═══ Learning ═══ */
+function refreshNret(sym){
+  const bars=S.candles[sym]?.m5; if(!bars||bars.length<150)return;
+  S.nret[sym]=buildNret(bars,buildIndicators(bars));
+}
+async function mineSymbol(sym){
+  const bars=S.candles[sym]?.m5;
+  if(!bars||bars.length<CFG.minBarsMine){
+    S.liveScan.pairs[sym]=S.liveScan.pairs[sym]||{};
+    S.liveScan.pairs[sym].status="bad";
+    S.liveScan.pairs[sym].note=`ডেটা কম (${bars?bars.length:0}/${CFG.minBarsMine})`;
+    return false;
+  }
+  S.liveScan.phase=`মাইনিং · ${sym}`;
+  refreshNret(sym);
+  const peerDefs=S.settings.usePeer?computePeerDefs(sym,S.nret):[];
+  const peers=peerDefs.map(d=>({map:S.nret[d.sym],r:d.r})).filter(p=>p.map);
+  const ds=buildDataset(bars,peers,Date.now());
+  const job=mineSymbolJob(ds);
+  S.rules[sym]={rules:job.rules,oos:job.oos,counts:job.counts,
+    samples:job.samples,total:job.total||0,peerDefs,minedAt:Date.now(),bars:bars.length,
+    discoverN:job.discoverN,valN:job.valN,blocks:job.blocks};
+  S.liveScan.pairs[sym]=S.liveScan.pairs[sym]||{};
+  S.liveScan.pairs[sym].status=job.rules.length?"ready":"nomatch";
+  S.liveScan.pairs[sym].ruleCount=job.rules.length;
+  S.liveScan.pairs[sym].counts=job.counts;
+  S.liveScan.pairs[sym].bars=bars.length;
+  return job.rules.length>0;
+}
+async function initialLoadAndMine(){
+  if(S.learnState.running)return;
+  const syms=[...S.selected]; if(!syms.length)return;
+  S.learnState={running:true,done:0,total:syms.length*2,phase:"ডেটা লোড",startedAt:Date.now()};
+  S.liveScan={phase:"ডেটা লোড শুরু",done:0,total:syms.length,pairs:{},ranked:[],at:Date.now()};
+  log("i","⚡ ডেটা + মাইনিং · "+syms.length+" পেয়ার");
+  let ok=0;
+  for(let i=0;i<syms.length;i++){
+    const s=syms[i]; S.learnState.phase=`ডেটা ${i+1}/${syms.length} · ${s}`; S.learnState.done=i; renderBtProgress();
+    S.liveScan.phase=`ডেটা · ${s}`; S.liveScan.done=i;
+    S.liveScan.pairs[s]={status:"loading",bars:S.candles[s]?.m5?.length||0};
+    const have=(S.candles[s]?.m5?.length||0)>=CFG.minBarsFull&&(Date.now()-(S.lastFetchAt[s]||0))<CFG.cacheFreshMs;
+    if(!have){
+      if(inBackoff()){ const w=backoffRemainMs(); if(w>1500)await sleep(Math.min(w,4000)); }
+      try{ await Promise.race([fetchSymbol(s,{skipCache:true,full:true,forceFetch:true}),sleep(25000).then(()=>{throw new Error("timeout");})]); }
+      catch(e){ log("w",s+" ❌ "+e.message); S.liveScan.pairs[s]={status:"bad",note:e.message.slice(0,32),bars:S.candles[s]?.m5?.length||0}; }
+    }
+    const bcount=S.candles[s]?.m5?.length||0;
+    if(bcount>0){ ok++; if(!S.liveScan.pairs[s]||S.liveScan.pairs[s].status==="loading") S.liveScan.pairs[s]={status:"loaded",bars:bcount}; }
+  }
+  for(const s of syms)refreshNret(s);
+  let mined=0, validatedCount=0;
+  for(let i=0;i<syms.length;i++){
+    const s=syms[i]; S.learnState.phase=`নিয়ম ${i+1}/${syms.length}`; S.learnState.done=syms.length+i; renderBtProgress();
+    S.liveScan.phase=`মাইনিং · ${s}`; S.liveScan.done=syms.length+i;
+    await sleep(10);
+    try{ if(await mineSymbol(s)){ mined++; const c=S.rules[s]?.counts; if(c) validatedCount += (c.VALIDATED||0)+(c.PROVISIONAL||0); } }catch(e){ log("e","mine "+s+": "+e.message); }
+  }
+  S.learnState={running:false,done:S.learnState.total,total:S.learnState.total,phase:"done"};
+  S.liveScan.phase=mined?`প্রস্তুত · ${mined} পেয়ার`:"প্রস্তুত";
+  S.liveScan.done=S.liveScan.total;
+  log("o",`🧠 প্রস্তুত · ${mined}/${syms.length} · usable:${validatedCount}`);
+  toast(mined?`🧠 ${mined} পেয়ার প্রস্তুত`:"⚠ নিয়ম নেই",mined?"ok":"err");
+  renderBtProgress(); renderStats(); setTimeout(renderBtProgress,4000);
+}
+async function backgroundMine(){
+  if(!S.running||S.mining||S.deciding||S.learnState.running)return;
+  const now=Date.now(), remain=(nextBoundary(now)-now)/1000;
+  if(remain<(S.settings.leadTime||40)+60)return;
+  let pick=null,oldest=Infinity;
+  for(const s of S.selected){
+    const bars=S.candles[s]?.m5; if(!bars||bars.length<CFG.minBarsMine)continue;
+    const t=S.rules[s]?.minedAt||0; if(now-t<CFG.remineEveryMs)continue;
+    if(t<oldest){ oldest=t; pick=s; }
+  }
+  if(!pick)return;
+  S.mining=true;
+  try{ await mineSymbol(pick); }catch(e){ log("e","remine "+pick+": "+e.message); }
+  finally{ S.mining=false; }
+}
+function fmtOos(a){ return a&&a[0]?`${(a[1]/a[0]*100).toFixed(0)}%/${a[0]}`:"—"; }
+function aggOOS(){
+  const t={A:[0,0],B:[0,0],C:[0,0],D:[0,0]};
+  for(const sym of Object.keys(S.rules)){ const o=S.rules[sym].oos; if(!o)continue; for(const g of "ABCD"){ t[g][0]+=o[g][0]; t[g][1]+=o[g][1]; } }
+  return t;
+}
+
+/* ═══ Save/Load ═══ */
+let saveStateTimer=null;
+function saveState(){
+  if(saveStateTimer) return;
+  saveStateTimer = setTimeout(()=>{ saveStateTimer=null; _saveStateNow(); }, CFG.saveStateDebounceMs);
+}
+function _saveStateNow(){
+  try{
+    const done=S.signals.filter(s=>s.phase==="DONE").slice(-400);
+    localStorage.setItem(SK.signals,JSON.stringify({v:VER,signals:done}));
+    localStorage.setItem(SK.settings,JSON.stringify({v:VER,settings:S.settings,selected:[...S.selected],biquoteUrl:S.biquoteUrl}));
+  }catch(e){}
+  saveActive();
+}
+function saveActive(){
+  try{
+    const strip=x=>x?JSON.parse(JSON.stringify(x,(k,v)=>(typeof k==="string"&&k[0]==="_")?undefined:v)):null;
+    localStorage.setItem(SK.active,JSON.stringify({current:strip(S.current),queued:strip(S.queued),settling:S.settling.map(strip),lastFireEntryAt:S.lastFireEntryAt}));
+  }catch(e){}
+}
+function loadState(){
+  try{ const r=localStorage.getItem(SK.signals); if(r){ const o=JSON.parse(r); S.signals=(o.signals||[]).filter(s=>s&&s.phase==="DONE").slice(-400); } }catch(e){}
+  try{ const c=localStorage.getItem(SK.settings); if(c){ const o=JSON.parse(c);
+    if(o.settings)Object.assign(S.settings,o.settings);
+    if(Array.isArray(o.selected)){ const s=o.selected.filter(x=>MARKETS.includes(x)); if(s.length)S.selected=new Set(s); }
+    if(typeof o.biquoteUrl==="string"&&/^https:\/\//i.test(o.biquoteUrl))S.biquoteUrl=o.biquoteUrl;
+  } }catch(e){}
+}
+function restoreActive(){
+  try{
+    const r=localStorage.getItem(SK.active); if(!r)return;
+    const o=JSON.parse(r), now=Date.now();
+    const ok=x=>x&&x.symbol&&(x.direction==="UP"||x.direction==="DOWN")&&x.expiryAt>now-600000&&x.phase!=="DONE";
+    if(ok(o.current)){ S.current=o.current; if(!S.signals.some(y=>y.id===o.current.id))S.signals.push(o.current); }
+    if(ok(o.queued)&&o.queued.entryAt>now-600000){ S.queued=o.queued; if(!S.signals.some(y=>y.id===o.queued.id))S.signals.push(o.queued); }
+    (o.settling||[]).filter(ok).forEach(x=>{ S.settling.push(x); if(!S.signals.some(y=>y.id===x.id))S.signals.push(x); });
+    if(typeof o.lastFireEntryAt==="number")S.lastFireEntryAt=o.lastFireEntryAt;
+  }catch(e){}
+}
+
+/* ═══ UI ═══ */
+function updatePill(id,st){ const el=$(id); if(!el)return; el.classList.remove("ok","bad","warn"); if(st===true)el.classList.add("ok"); else if(st===false)el.classList.add("bad"); else if(st==="warn")el.classList.add("warn"); }
+function updateNetUI(){
+  const banner=$("netBanner"); if(banner)banner.innerHTML=inBackoff()?`<div class="net-banner">⚠️ Backoff · ${Math.ceil(backoffRemainMs()/1000)}s</div>`:"";
+  const t=$("tNet"); if(t){ if(inBackoff())t.textContent=Math.ceil(backoffRemainMs()/1000)+"s"; else if(NET.consecutiveErrors>0)t.textContent="WARN"; else t.textContent="OK"; }
+  updatePill("pNet",inBackoff()?false:(NET.consecutiveErrors>0?"warn":true));
+  const dot=$("logoDot"); if(dot){ dot.classList.remove("err","warn","run"); if(S.running){ if(inBackoff())dot.classList.add("err"); else if(NET.consecutiveErrors>0)dot.classList.add("warn"); else dot.classList.add("run"); } }
+  const ns=$("netStatus"); if(ns)ns.innerHTML=`<div class="kv"><span>Req</span><b>${NET.totalRequests}</b></div><div class="kv"><span>Err</span><b class="${NET.totalErrors>0?"red":"grn"}">${NET.totalErrors}</b></div>`;
+}
+function renderBtProgress(){
+  const el=$("btProgress"); if(!el)return; const st=S.learnState;
+  if(st.running){ const pct=st.total?(st.done/st.total)*100:0; el.innerHTML=`<div class="bt-progress">🧠 <b>${esc(st.phase)}</b> · ${st.done}/${st.total}<div class="bar"><i style="width:${pct}%"></i></div></div>`; return; }
+  if(st.phase==="done"){ const g=aggOOS(); el.innerHTML=`<div class="bt-progress">🧠 প্রস্তুত · OOS A ${fmtOos(g.A)} · B ${fmtOos(g.B)}</div>`; return; }
+  el.innerHTML="";
+}
+function renderLiveScan(){
+  const el=$("liveScanList"); if(!el) return;
+  const ls = S.liveScan||{phase:"—",done:0,total:0,pairs:{},ranked:[]};
+  const ph=$("lsPhase"); if(ph) ph.textContent = ls.phase + (ls.total?` · ${ls.done}/${ls.total}`:"");
+  const bar=$("lsBarFill"); if(bar) bar.style.width = ls.total ? Math.min(100,(ls.done/ls.total)*100)+"%" : "0%";
+  const pairs=[...S.selected];
+  if(!pairs.length){ el.innerHTML=`<div class="empty">পেয়ার সিলেক্ট করুন</div>`; return; }
+  const rankMap={}; (ls.ranked||[]).forEach(r=>rankMap[r.sym]=r.rank);
+  const rows = pairs.map(sym=>{
+    const ps=ls.pairs[sym];
+    const c=S.candles[sym];
+    const bars=c?.m5?.length||0;
+    const P=S.rules[sym];
+    const ruleCount=ps?.ruleCount ?? (P?.rules?.length||0);
+    const counts = ps?.counts || P?.counts;
+    const dir=ps?.dir;
+    const grade=ps?.grade;
+    const flipped=ps?.flipped;
+    const score=ps?.score;
+    const rank=rankMap[sym];
+    let icon="⏳", txt="লোড হয়নি", cls="mut";
+    if(ps?.status==="loading"){ icon="⏳"; txt="লোড হচ্ছে…"; cls="blu"; }
+    else if(ps?.status==="bad"){ icon="❌"; txt=ps.note||"ত্রুটি"; cls="red"; }
+    else if(ps?.status==="loaded" && !ruleCount){ icon="🧠"; txt="মাইনিং হয়নি"; cls="ylw"; }
+    else if(ps?.status==="ok" && ps?.dir){
+      icon=flipped?"↺":"✅";
+      txt = flipped ? `ফ্লিপ` : `✓ pass`;
+      cls = flipped ? "pur" : "grn";
+    }
+    else if(ps?.status==="ready"||ruleCount>0){ icon="✅"; txt=`প্রস্তুত · ${ruleCount}`; cls="grn"; }
+    else if(ps?.status==="nomatch"){ icon="○"; txt="নিয়ম হয়নি"; cls="ylw"; }
+    const bcls = bars>=CFG.minBarsMine ? "grn" : bars>=CFG.minBarsDataOK ? "ylw" : "red";
+    const rankTag = rank ? `<span class="gr ${rank===1?"gr-A":rank<=3?"gr-B":"gr-D"}">#${rank}</span>` : `<span class="mut">#—</span>`;
+    const dirTag = dir ? (dir==="UP" ? `<span class="grn">▲</span>` : `<span class="red">▼</span>`) : "";
+    const flipTag = flipped ? `<span class="gr gr-FLIP">↺</span>` : "";
+    const gradeTag = grade ? `<span class="gr gr-${grade}">${grade}</span>` : "";
+    const peTag = score!=null ? `<b class="blu">${score}%</b>` : `<span class="mut">—</span>`;
+    const topCls = rank===1 ? "top1" : "";
+    let vpTag = "";
+    if(counts){
+      const V = counts.VALIDATED||0, Pr = counts.PROVISIONAL||0;
+      vpTag = `<span class="gr gr-V">V:${V}</span><span class="gr gr-P">P:${Pr}</span>`;
+    }
+    return `<div class="ls-row ${topCls}">
+      <span class="ls-rank">${rankTag}</span>
+      <span class="ls-sym">${sym}</span>
+      <span class="ls-bars ${bcls}">${bars}b</span>
+      <span class="ls-status ${cls}">${icon} ${esc(txt)}</span>
+      <span class="ls-right">${vpTag} ${dirTag}${flipTag}${gradeTag} ${peTag}</span>
+    </div>`;
+  }).join("");
+  el.innerHTML = rows;
+}
+function renderQueued(){
+  const box=$("queuedBox"); if(!box)return; const now=Date.now();
+  if(S.queued){
+    const q=S.queued, up=q.direction==="UP", sec=Math.max(0,Math.ceil((q.entryAt-now)/1000));
+    const flip = q.flipped?`<span class="gr gr-FLIP">↺</span>`:"";
+    box.innerHTML=`<div style="border:1px solid #8a6d1a;border-radius:12px;padding:11px 12px;margin-bottom:10px;background:linear-gradient(180deg,#1a1408,#0a0f18);font-size:12px"><div style="display:flex;justify-content:space-between;font-weight:700;color:#ffb020;margin-bottom:6px"><span>⏭ Q [${q.fireSource}] ${flip}</span><span>${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}</span></div><div style="display:flex;justify-content:space-between"><b>${q.symbol}</b><b class="${up?"grn":"red"}">${up?"▲ UP":"▼ DOWN"}</b></div></div>`;
+    return;
+  }
+  box.innerHTML="";
+}
+function grBadge(g,forced,inst,flipped){
+  const instBadge = inst>=3 ? `<span class="gr gr-U">⚠${inst}</span>` : (inst>=2 ? `<span class="gr gr-C">⚠${inst}</span>` : "");
+  const flipBadge = flipped ? `<span class="gr gr-FLIP">↺</span>` : "";
+  return `${flipBadge}<span class="gr gr-${g}">${g}</span>${forced?`<span class="gr gr-F">F</span>`:""}${instBadge}`;
+}
+function statusBadge(st){
+  if(!st) return "";
+  const map = {VALIDATED:["gr-V","V"],PROVISIONAL:["gr-P","P"],REJECTED:["gr-R","R"],INSUFFICIENT:["gr-I","I"]};
+  const [cls,ch] = map[st]||["gr-I","?"];
+  return `<span class="gr ${cls}" title="${st}">${ch}</span>`;
+}
+function renderSignal(){
+  const box=$("sigBox"); if(!box)return;
+  const sig=S.current, now=Date.now(), sess=currentSession();
+  if(!sig){
+    if(!S.running){ box.className="sigbox idle"; box.innerHTML=`<div class="sig-phase">⏸ বন্ধ</div><div class="sig-market">—</div><div class="sig-arrow" style="color:#3a4a5f">⌛</div><div class="sub">চালু করুন</div>`; return; }
+    if(S.learnState.running){
+      const st=S.learnState, pct=st.total?Math.round(st.done/st.total*100):0;
+      box.className="sigbox learn";
+      box.innerHTML=`<div class="sig-phase scan">🧠 শিখছে</div><div class="sig-market" style="font-size:14px;color:#c4b3ff">${esc(st.phase)}</div><div class="count-big blue">${pct}%</div><div class="progress"><i style="width:${pct}%"></i></div>`;
+      return;
+    }
+    const entryAt=nextBoundary(now), remain=Math.max(0,Math.ceil((entryAt-now)/1000)), lead=S.settings.leadTime, wait=Math.max(0,remain-lead);
+    box.className="sigbox skip";
+    const sc=S.lastScan;
+    let note="";
+    if(S.deciding)note="🔎 স্ক্যান…";
+    else if(sc&&Date.now()-sc.time<CFG.frameMs)note="⏭ "+sc.decision;
+    else note=`পরের ক্যান্ডেল ${fmtClock(entryAt)}`;
+    box.innerHTML=`<div class="sig-phase scan">SCAN <span class="session-pill ${sess}" style="margin-left:6px">${sess}</span></div><div class="sig-market" style="font-size:13px;color:#c4b3ff">🧠 সেরা খুঁজছে</div><div class="count-big blue">${wait>0?wait:remain}</div><div class="sub">${wait>0?"সেকেন্ড":"এন্ট্রি"}</div><div class="sub" style="margin-top:6px">${esc(note)}</div>`;
+    return;
+  }
+  const isUp=sig.direction==="UP";
+  if(sig.phase==="WAIT_ENTRY"){
+    const remainS=Math.max(0,Math.ceil((sig.entryAt-now)/1000));
+    const pct=clamp(100-((sig.entryAt-now)/Math.max(1,sig.entryAt-sig.createdAt))*100,0,100);
+    box.className="sigbox "+(sig.flipped?"flip":"retry");
+    const phCls = sig.flipped?"flip":"retry";
+    const rawNote = (sig.rawScore!=null && sig.rawScore!==sig.score) ? ` (raw ${sig.rawScore}%)` : "";
+    box.innerHTML=`<div class="sig-phase ${phCls}">${sig.flipped?"↺ ফ্লিপ":"🎯"} ${fmtClock(sig.entryAt)} ${grBadge(sig.grade,sig.forced,sig.instability,sig.flipped)} ${statusBadge(sig.ruleStatus)}</div><div class="sig-market">${esc(sig.symbol)}</div><div class="sig-arrow ${isUp?"up":"dn"}">${isUp?"▲":"▼"}</div><div class="sub">স্কোর ${sig.score}%${rawNote}</div><div class="sub" style="margin-top:2px;font-size:10px">${esc(sig.rule||"")}</div>${sig.calibNote?`<div class="sub pur" style="margin-top:4px">${esc(sig.calibNote)}</div>`:""}<div class="count-big">${remainS>=60?Math.floor(remainS/60)+":"+String(remainS%60).padStart(2,"0"):remainS}</div><div class="progress warm"><i style="width:${pct}%"></i></div>`;
+    return;
+  }
+  if(sig.phase==="IN_TRADE"){
+    const remainS=Math.max(0,Math.ceil((sig.expiryAt-now)/1000));
+    const live=sig.lastPrice||sig.entryPrice;
+    const rawPips=isNum(sig.entryPrice)?(isUp?(live-sig.entryPrice):sig.entryPrice-live)/pipSize(sig.symbol):0;
+    const pCls=rawPips>0?"grn":rawPips<0?"red":"mut";
+    const pct=clamp(((CFG.duration*1000-Math.max(0,sig.expiryAt-now))/(CFG.duration*1000))*100,0,100);
+    const mm=Math.floor(remainS/60), ss=remainS%60;
+    box.className="sigbox "+(sig.flipped?"flip":(isUp?"up":"dn"));
+    box.innerHTML=`<div class="sig-phase trade">🔵 TRADE ${fmtClock(sig.expiryAt)} ${grBadge(sig.grade,sig.forced,sig.instability,sig.flipped)} ${statusBadge(sig.ruleStatus)}</div><div class="sig-market">${esc(sig.symbol)}</div><div class="sig-arrow ${isUp?"up":"dn"}">${isUp?"▲":"▼"}</div><div class="count-big ${pCls}">${remainS<=0?"…":(mm>0?mm+":"+String(ss).padStart(2,"0"):ss+"s")}</div><div class="progress good"><i style="width:${pct}%"></i></div><div class="sig-info"><div><div class="k">Entry</div><div class="v">${fmtP(sig.symbol,sig.entryPrice)}</div></div><div><div class="k">P&L</div><div class="v ${pCls}">${fmtPip(rawPips)}</div></div><div><div class="k">স্কোর</div><div class="v blu">${sig.score}%</div></div><div><div class="k">গ্রেড</div><div class="v">${sig.fireSource}</div></div></div>`;
+    return;
+  }
+  if(sig.phase==="DONE"){
+    const isWin=sig.outcome==="WIN", isLoss=sig.outcome==="LOSS", isTie=sig.outcome==="TIE";
+    box.className="sigbox "+(isWin?"done-w":isLoss?"done-l":"done-t");
+    box.innerHTML=`<div class="sig-phase done">${isWin?"✅ WIN":isLoss?"❌ LOSS":isTie?"➖ TIE":"⚠ "+esc(sig.outcome)} ${grBadge(sig.grade,sig.forced,sig.instability,sig.flipped)}</div><div class="sig-market">${esc(sig.symbol)}</div><div class="sig-arrow ${isUp?"up":"dn"}">${isUp?"▲":"▼"}</div><div class="count-big ${isWin?"grn":isLoss?"red":"dim"}">${isTie?"0.0 pips":fmtPip(sig.pips)+" pips"}</div>`;
+  }
+}
+function renderAnalysis(){
+  const el=$("analysisBox"); if(!el)return; const sig=S.current; if(!sig){ el.innerHTML=""; return; }
+  const forcedNote=sig.forced?`<div class="strip ylw">⏱ <b>Forced:</b> সবচেয়ে ভালো candidate</div>`:"";
+  const flipNote=sig.flipped?`<div class="strip pur">↺ <b>ফ্লিপ।</b> ${esc(sig.calibNote||"")}</div>`:"";
+  el.innerHTML=`<div class="analysis-card"><div class="head"><h4>${esc(sig.symbol)} ${grBadge(sig.grade,sig.forced,sig.instability,sig.flipped)} ${statusBadge(sig.ruleStatus)}</h4></div>${flipNote}${forcedNote}
+    <div class="kv"><span>নিয়ম</span><b style="font-size:10px">${esc(sig.rule||"—")}</b></div>
+    <div class="kv"><span>In-sample</span><b>${(sig.ruleWR*100).toFixed(1)}% · n${sig.ruleN}</b></div>
+    <div class="kv"><span>Raw → Final</span><b class="blu">${sig.rawScore}% → ${sig.score}%</b></div>
+  </div>`;
+}
+function renderScan(){
+  const el=$("scanPanel"); if(!el)return; const sc=S.lastScan;
+  if(!sc){ el.innerHTML=`<div class="empty">এখনো স্ক্যান হয়নি</div>`; return; }
+  const isSkip = sc.decision && sc.decision.startsWith("স্কিপ");
+  let html=`<div class="strip ${isSkip?"ylw":"grn"}">${fmtClock(sc.time)} → <b>${esc(sc.decision)}</b></div>`;
+  html+=(sc.cands||[]).map(c=>`<div class="kv"><span><b>${c.sym}</b> <b class="${c.dir==="UP"?"grn":"red"}">${c.dir==="UP"?"▲":"▼"}</b> ${grBadge(c.grade,false,c.instability,c.flipped)}${statusBadge(c.ruleStatus)}</span><b>${c.score}%</b></div>`).join("");
+  el.innerHTML=html;
+}
+function forceRender(){ renderSignal(); renderQueued(); renderAnalysis(); renderLiveScan(); updateNetUI(); }
+function renderLastFires(){
+  const el=$("lastFires"); if(!el)return;
+  const recent=S.signals.slice().reverse().slice(0,10);
+  if(!recent.length){ el.innerHTML=`<div class="empty">এখনো নেই</div>`; return; }
+  el.innerHTML=recent.map(s=>{
+    const phase=s.phase==="DONE"?(s.outcome||"—"):s.phase==="WAIT_ENTRY"?"WAIT":"LIVE";
+    const cls=s.phase==="DONE"?(s.outcome==="WIN"?"grn":s.outcome==="LOSS"?"red":"dim"):"blu";
+    const pips=s.phase==="DONE"?fmtPip(s.pips)+"p":fmtClock(s.entryAt).slice(0,5);
+    return `<div class="kv"><span>${s.symbol} ${s.direction==="UP"?"▲":"▼"} ${grBadge(s.grade||"D",s.forced,s.instability,s.flipped)}</span><b class="${cls}">${phase} ${pips}</b></div>`;
+  }).join("");
+}
+function calcStats(){
+  const done=S.signals.filter(s=>s.phase==="DONE"&&s.settlementStatus==="CONFIRMED");
+  const w=done.filter(s=>s.outcome==="WIN"), l=done.filter(s=>s.outcome==="LOSS"), t=done.filter(s=>s.outcome==="TIE");
+  const res=w.length+l.length, rate=res?w.length/res*100:null;
+  return{total:done.length,wins:w.length,losses:l.length,ties:t.length,rate,net:done.reduce((a,s)=>a+(s.pips||0),0)};
+}
+function renderStats(){
+  const st=calcStats(), set=(id,v)=>{ const e=$(id); if(e)e.textContent=v; };
+  const flipCount=S.signals.filter(s=>s.flipped).length;
+  set("sTotal",S.signals.filter(s=>s.phase==="DONE").length); set("sWin",st.wins); set("sLoss",st.losses); set("sFlip",flipCount);
+  set("sRate",st.rate==null?"—":st.rate.toFixed(1)+"%"); set("sRateM",(st.wins+st.losses)+" verified");
+  const sp=$("sPips"); if(sp){ sp.textContent=fmtPip(st.net); sp.className="v tnum "+(st.net>0?"grn":st.net<0?"red":""); }
+  set("stTotal",st.total); set("stWin",st.wins); set("stLoss",st.losses); set("stTie",st.ties); set("stRate",st.rate==null?"—":st.rate.toFixed(1)+"%");
+  const stp=$("stPips"); if(stp){ stp.textContent=fmtPip(st.net); stp.className="v tnum "+(st.net>0?"grn":st.net<0?"red":""); }
+  const map={};
+  S.signals.filter(s=>s.settlementStatus==="CONFIRMED").forEach(s=>{ if(!map[s.symbol])map[s.symbol]={w:0,l:0,p:0}; if(s.outcome==="WIN")map[s.symbol].w++; else if(s.outcome==="LOSS")map[s.symbol].l++; map[s.symbol].p+=s.pips||0; });
+  const el=$("perPair");
+  if(el){ const ents=Object.entries(map).sort((a,b)=>b[1].p-a[1].p);
+    el.innerHTML=ents.length?ents.map(([sym,m])=>{ const res=m.w+m.l, rate=res?(m.w/res*100).toFixed(0)+"%":"—"; return `<div class="kv"><span>${sym}</span><b><span class="grn">${m.w}W</span>/<span class="red">${m.l}L</span> ${rate} <span class="${m.p>0?"grn":m.p<0?"red":"mut"}">${fmtPip(m.p)}</span></b></div>`; }).join(""):`<div class="empty">—</div>`; }
+  const gp=$("gradePerf");
+  if(gp){
+    const m={};
+    S.signals.filter(s=>s.settlementStatus==="CONFIRMED").forEach(s=>{ const k=s.fireSource||"?"; if(!m[k])m[k]={w:0,l:0}; if(s.outcome==="WIN")m[k].w++; else if(s.outcome==="LOSS")m[k].l++; });
+    let h=""; for(const k of Object.keys(m).sort()){ const x=m[k], r=x.w+x.l; if(!r)continue; const rate=x.w/r*100; h+=`<div class="kv"><span>${k}</span><b class="${rate>=60?"grn":rate>=52?"ylw":"red"}">${rate.toFixed(0)}% (${x.w}W/${x.l}L)</b></div>`; }
+    gp.innerHTML=h||`<div class="empty">—</div>`;
+  }
+  updateCalibPill(); updateRulePills();
+}
+function updateCalibPill(){
+  const c=calibEnsure();
+  let flips=0, boosts=0;
+  const size=CFG.calib.size;
+  for(const key of Object.keys(c.bands)){
+    const b=c.bands[key]; if(!b||b.n<CFG.calib.minN) continue;
+    const dec=b.w+b.l; if(!dec) continue;
+    const wLB = wilsonLB(b.w, dec); const lLB = wilsonLB(b.l, dec);
+    if(lLB>=CFG.calib.flipLB && b.n>=CFG.calib.minNStrong) flips++;
+    else if(wLB>=CFG.calib.boostLB) boosts++;
+  }
+  const t=$("tCalib"); if(t) t.textContent = `↺${flips} ↑${boosts}`;
+  const el=$("pCalib"); if(el){
+    el.classList.remove("ok","bad","warn");
+    if(c.global.n < CFG.calib.minN) el.classList.add("warn");
+    else if(flips>0||boosts>0) el.classList.add("ok");
+    else el.classList.add("warn");
+  }
+}
+function updateRulePills(){
+  let val=0,usable=0,cnt=0;
+  for(const s of Object.keys(S.rules)){
+    const r=S.rules[s].rules||[]; const c=S.rules[s].counts||{};
+    cnt+=r.length; val += c.VALIDATED||0; usable += (c.VALIDATED||0)+(c.PROVISIONAL||0);
+  }
+  const tR=$("tRules"); if(tR)tR.textContent=`V${val}/U${usable}/${cnt}`;
+  updatePill("pRules",val>0?true:usable>0?"warn":false);
+}
+function renderHistory(){
+  const list=$("histList"); if(!list)return;
+  const done=S.signals.filter(s=>s.phase==="DONE"), hc=$("hCount"); if(hc)hc.textContent=done.length+" টি";
+  if(!done.length){ list.innerHTML=`<div class="empty">কোনো ট্রেড নেই</div>`; return; }
+  list.innerHTML=done.slice().reverse().slice(0,150).map(s=>{
+    const isUp=s.direction==="UP", isWin=s.outcome==="WIN", isLoss=s.outcome==="LOSS", isTie=s.outcome==="TIE";
+    const outTag=isWin?"b-up":isLoss?"b-dn":isTie?"b-tie":"b-u", pCls=isWin?"grn":isLoss?"red":"dim", cardCls=isWin?"win":isLoss?"loss":isTie?"tie":"";
+    const scoreTxt = (s.rawScore!=null && s.rawScore!==s.score) ? `${s.score}% <span class="mut" style="font-size:9px">(raw ${s.rawScore}%)</span>` : `${s.score}%`;
+    return `<div class="hcard ${cardCls}"><div class="top"><span class="sym">${esc(s.symbol)}</span><span class="badge ${isUp?"b-up":"b-dn"}">${isUp?"▲":"▼"}</span>${grBadge(s.grade||"D",s.forced,s.instability,s.flipped)}${statusBadge(s.ruleStatus)}<span style="flex:1"></span><span class="badge ${outTag}">${esc(s.outcome||"—")}</span></div><div class="prices">${fmtP(s.symbol,s.entryPrice)} → ${fmtP(s.symbol,s.expiryPrice)}</div><div class="bottom"><span style="font-weight:800" class="${pCls}">${isTie?"TIE":fmtPip(s.pips)+" pips"}</span><span style="font-size:9.5px;color:var(--dim)">${scoreTxt} · ${fmtTime(s.exitedAt||s.createdAt)}</span></div></div>`;
+  }).join("");
+}
+function renderMarkets(){
+  const wrap=$("marketChips"); if(!wrap)return;
+  const term=S.searchTerm.trim().toUpperCase(), list=MARKETS.filter(s=>!term||s.includes(term));
+  wrap.innerHTML="";
+  list.forEach(sym=>{
+    const chip=document.createElement("div"); chip.className="chip"+(S.selected.has(sym)?" on":"");
+    const bars=S.candles[sym]?.m5?.length||0, st=symStatus(sym), dotCls=st.state==="ok"?"ok":st.state==="warn"?"warn":"err";
+    chip.innerHTML=`<div class="csd ${dotCls}"></div><div class="cs">${sym}</div><div class="cd">${getPrice(sym)?fmtP(sym,getPrice(sym)):"—"} ${bars?bars+"b":""}</div>`;
+    chip.onclick=()=>{ if(S.selected.has(sym))S.selected.delete(sym); else S.selected.add(sym); renderMarkets(); saveState(); };
+    wrap.appendChild(chip);
+  });
+  const mc=$("mCount"); if(mc)mc.textContent=S.selected.size;
+}
+
+/* ═══ Chart ═══ */
+const chart={canvas:null,ctx:null,w:0,h:0};
+function initChart(){ chart.canvas=$("chartCanvas"); if(!chart.canvas||!chart.canvas.getContext)return; chart.ctx=chart.canvas.getContext("2d"); resizeChart(); window.addEventListener("resize",resizeChart); }
+function resizeChart(){
+  if(!chart.canvas||!chart.ctx)return; const wrap=chart.canvas.parentElement;
+  const cssW=Math.max(80,wrap.clientWidth-12), cssH=180, dpr=Math.min(2,window.devicePixelRatio||1);
+  chart.canvas.width=Math.floor(cssW*dpr); chart.canvas.height=Math.floor(cssH*dpr);
+  chart.canvas.style.width=cssW+"px"; chart.canvas.style.height=cssH+"px";
+  chart.ctx.setTransform(dpr,0,0,dpr,0,0); chart.w=cssW; chart.h=cssH;
+}
+function findRefSignal(sym,bars0){
+  if(S.current&&S.current.symbol===sym&&isNum(S.current.entryPrice))return S.current;
+  if(!bars0.length)return null; const firstTime=bars0[0].time;
+  for(let i=S.signals.length-1;i>=0;i--){ const s=S.signals[i]; if(s.symbol===sym&&isNum(s.entryPrice)&&s.entryCandleTime>=firstTime)return s; }
+  return null;
+}
+function drawChart(){
+  if(!chart.ctx)return;
+  const ctx=chart.ctx,W=chart.w,H=chart.h; ctx.clearRect(0,0,W,H);
+  const sym=S.chartSymbol, bars0=S.candles[sym]?.m5||[];
+  if(!sym||bars0.length<5){ ctx.fillStyle="#44556b"; ctx.font="500 12px sans-serif"; ctx.textAlign="center"; ctx.fillText(!sym?"—":"লোড…",W/2,H/2); return; }
+  const bars=bars0.slice(-40), refSig=findRefSignal(sym,bars0);
+  let minP=Infinity,maxP=-Infinity; bars.forEach(b=>{ if(b.low<minP)minP=b.low; if(b.high>maxP)maxP=b.high; });
+  if(refSig&&isNum(refSig.entryPrice)){ minP=Math.min(minP,refSig.entryPrice); maxP=Math.max(maxP,refSig.entryPrice); }
+  const range=(maxP-minP)||0.0001; minP-=range*0.06; maxP+=range*0.06;
+  const padL=4,padR=50,padT=8,padB=16,plotW=W-padL-padR,plotH=H-padT-padB;
+  const xAt=i=>padL+(i+0.5)*(plotW/bars.length), yAt=p=>padT+(1-(p-minP)/(maxP-minP))*plotH;
+  ctx.strokeStyle="rgba(26,36,51,.5)"; ctx.lineWidth=1;
+  for(let g=0;g<=3;g++){ const y=padT+plotH*g/3; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke(); ctx.fillStyle="#44556b"; ctx.font="500 9px monospace"; ctx.textAlign="left"; ctx.fillText(Number(maxP-(maxP-minP)*(g/3)).toFixed(dec(sym)),W-padR+4,y); }
+  const cw=Math.max(2,(plotW/bars.length)*0.6);
+  for(let i=0;i<bars.length;i++){
+    const b=bars[i],up=b.close>=b.open,x=xAt(i);
+    ctx.strokeStyle=up?"#10c98a":"#ff4d6a"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(x,yAt(b.high)); ctx.lineTo(x,yAt(b.low)); ctx.stroke();
+    const yT=Math.min(yAt(b.open),yAt(b.close)), bh=Math.max(1.2,Math.abs(yAt(b.close)-yAt(b.open)));
+    ctx.fillStyle=up?"#10c98a":"#ff4d6a"; ctx.fillRect(x-cw/2,yT,cw,bh);
+  }
+  if(refSig&&isNum(refSig.entryPrice)){
+    const entryY=yAt(refSig.entryPrice);
+    if(entryY>=padT&&entryY<=padT+plotH){
+      let lineColor="#9b7cff"; if(refSig.phase==="IN_TRADE")lineColor="#3ba9ff"; else if(refSig.phase==="DONE")lineColor=refSig.outcome==="WIN"?"#10c98a":refSig.outcome==="LOSS"?"#ff4d6a":"#7a8ba3";
+      ctx.save(); ctx.setLineDash([6,4]); ctx.strokeStyle=lineColor; ctx.lineWidth=1.8; ctx.beginPath(); ctx.moveTo(padL,entryY); ctx.lineTo(W-padR,entryY); ctx.stroke(); ctx.restore();
+      const lbl=(refSig.flipped?"↺ ":"")+fmtP(sym,refSig.entryPrice); ctx.font="800 9px monospace"; const tw=ctx.measureText(lbl).width;
+      ctx.fillStyle="rgba(7,11,18,.85)"; ctx.fillRect(padL+2,entryY-12,tw+6,11); ctx.fillStyle=lineColor; ctx.textAlign="left"; ctx.fillText(lbl,padL+4,entryY-4);
+    }
+  }
+  const last=bars[bars.length-1], ly=yAt(last.close), col=last.close>=last.open?"#10c98a":"#ff4d6a";
+  ctx.fillStyle=col; ctx.fillRect(W-padR,ly-7,padR,14); ctx.fillStyle="#070b12"; ctx.font="800 9px monospace"; ctx.textAlign="center"; ctx.fillText(Number(last.close).toFixed(dec(sym)),W-padR+padR/2,ly);
+  const symEl=$("chartSym"),priceEl=$("chartPrice"),srcEl=$("chartSrc"),barsEl=$("chartBars");
+  if(symEl)symEl.textContent=sym;
+  if(priceEl){ priceEl.textContent=fmtP(sym,last.close); priceEl.className="chart-price "+(last.close>=last.open?"up":"dn"); }
+  if(srcEl){ const st=symStatus(sym); srcEl.className="chart-src "+(st.state==="ok"?"live":st.state==="warn"?"warn":"err"); srcEl.textContent=st.msg; }
+  if(barsEl)barsEl.textContent=`${bars0.length} 5m${S.candles[sym]?.src?" · "+S.candles[sym].src:""}`;
+}
+function renderCandleClock(now){
+  const sec=secIntoFrame(now), remain=CFG.frameMs/1000-sec, pct=(sec/(CFG.frameMs/1000))*100, lead=S.settings.leadTime;
+  const el=$("tCandle"); if(el)el.textContent=Math.floor(remain/60)+":"+String(remain%60).padStart(2,"0");
+  const pC=$("pCandle"); if(pC){ pC.classList.remove("ok","warn","bad"); pC.classList.add(remain<=lead?"warn":"ok"); }
+  const bar=$("candleBar"); if(bar){ const i=bar.querySelector("i"); if(i)i.style.width=pct+"%"; bar.classList.remove("warm","hot"); if(remain<=5)bar.classList.add("hot"); else if(remain<=lead)bar.classList.add("warm"); }
+  const tS=$("tSession"),pS=$("pSession"); if(tS)tS.textContent=currentSession();
+  if(pS){ pS.classList.remove("ok","warn","bad"); const s=currentSession(); if(s==="LDN_NY")pS.classList.add("ok"); else if(s==="OFF")pS.classList.add("bad"); else if(s==="ASIA")pS.classList.add("warn"); }
+}
+
+/* ═══ Loop ═══ */
+let liveBusy=false, liveTimer=null, refreshBusy=false;
+async function liveTick(){
+  if(liveBusy||document.hidden)return; liveBusy=true;
+  try{
+    const syms=[...new Set([S.chartSymbol,S.current&&S.current.symbol,S.queued&&S.queued.symbol].filter(Boolean))];
+    for(const sym of syms){ try{ await fetchSymbol(sym,{skipCache:true,forceFetch:true,bypassGap:true,light:true}); }catch(e){} }
+  }finally{ liveBusy=false; }
+}
+function startLive(){ if(!liveTimer)liveTimer=setInterval(liveTick,4000); }
+function stopLive(){ if(liveTimer){ clearInterval(liveTimer); liveTimer=null; } }
+async function smartRefresh(){
+  if(refreshBusy||!S.selected.size||S.learnState.running)return;
+  if(inBackoff()){ updateDataPill(); return; }
+  refreshBusy=true;
+  try{
+    const pri=[]; if(S.chartSymbol)pri.push(S.chartSymbol); if(S.current)pri.push(S.current.symbol); if(S.queued)pri.push(S.queued.symbol);
+    const queue=[...new Set([...pri,...S.selected])], now=Date.now();
+    const stale=queue.filter(s=>(now-(S.lastFetchAt[s]||0))>60000);
+    for(const s of stale.slice(0,Math.max(1,Math.min(CFG.fetchBatchSize,queue.length)))){ try{ await fetchSymbol(s,{skipCache:true}); }catch(e){ if(inBackoff())break; } }
+    updateDataPill();
+  }finally{ refreshBusy=false; }
+}
+function updateDataPill(){
+  let healthy=0; for(const sym of S.selected){ const st=symStatus(sym); if(st.state==="ok"||st.state==="warn")healthy++; }
+  const t=$("tData"); if(t)t.textContent=`${healthy}/${S.selected.size}`;
+  const ratio=healthy/Math.max(1,S.selected.size); updatePill("pData",ratio>=0.8?true:ratio>=0.4?"warn":false);
+}
+function activeTab(){ const el=document.querySelector(".tab.active"); return el?el.dataset.tab:"signal"; }
+let loopId=null,rafId=null,lastRender=0,lastRank=0,lastNetUI=0,lastLiveScan=0;
+function loop(){
+  const now=Date.now();
+  if(S.settings.autoRefresh&&S.running)smartRefresh().catch(()=>{});
+  tryGenerate().catch(e=>log("e","gen: "+e.message));
+  backgroundMine().catch(()=>{});
+  try{ tickAll(now); }catch(e){}
+  if(document.hidden)return;
+  const at=activeTab();
+  if(at==="signal"){
+    renderSignal(); renderQueued(); renderAnalysis(); renderCandleClock(now);
+    if(now-lastLiveScan>=600){ lastLiveScan=now; try{ renderLiveScan(); }catch(e){} }
+  }
+  if(now-lastRank>=2000){ lastRank=now; try{ renderLastFires(); renderScan(); updateRulePills(); }catch(e){} }
+  if(now-lastNetUI>=1500){ lastNetUI=now; updateNetUI(); renderBtProgress(); updateDataPill(); updateCalibPill(); }
+}
+function frameLoop(ts){ rafId=requestAnimationFrame(frameLoop); if(ts-lastRender<60)return; lastRender=ts; if(activeTab()==="signal")drawChart(); }
+function startLoop(){ if(!loopId)loopId=setInterval(loop,CFG.loopMs); }
+function stopLoop(){ if(loopId){ clearInterval(loopId); loopId=null; } }
+function startRender(){ if(!rafId)rafId=requestAnimationFrame(frameLoop); }
+function stopRender(){ if(rafId){ cancelAnimationFrame(rafId); rafId=null; } }
+
+async function startBot(){
+  if(S.running)return;
+  if(!S.selected.size){ toast("পেয়ার সিলেক্ট","warn"); switchTab("markets"); return; }
+  S.running=true; S.lastDecisionBoundary=-1; S.prefetchBoundary=-1;
+  const btn=$("bStart"); if(btn){ btn.textContent="⏸ থামান"; btn.className="btn red grow"; btn.style.flex="2"; }
+  log("o",`▶ R22 v22.8 · ${S.selected.size} পেয়ার · প্রতি ৫ মিনিটে সিগন্যাল`);
+  toast("R22 v22.8 চালু","ok"); beep(880,0.1); netReset();
+  startLoop(); startRender(); startLive(); forceRender(); renderStats(); updateDataPill(); updateNetUI();
+  initialLoadAndMine().catch(e=>{ log("e","load: "+e.message); S.learnState.running=false; });
+}
+function stopBot(){
+  S.running=false; stopLoop(); stopLive();
+  const btn=$("bStart"); if(btn){ btn.textContent="▶ চালু করুন"; btn.className="btn grn grow"; btn.style.flex="2"; }
+  log("w","⏸ বট বন্ধ"); toast("বট বন্ধ","warn"); forceRender();
+}
+function switchTab(name){
+  $$(".panel").forEach(p=>p.classList.remove("active")); $$(".tab").forEach(t=>t.classList.remove("active"));
+  const panel=$("panel-"+name), tab=document.querySelector(`.tab[data-tab="${name}"]`);
+  if(panel)panel.classList.add("active"); if(tab)tab.classList.add("active");
+  if(name==="history")renderHistory(); if(name==="stats")renderStats(); if(name==="markets"){ renderMarkets(); updateNetUI(); }
+  if(name==="signal")setTimeout(()=>{ resizeChart(); drawChart(); renderAnalysis(); renderScan(); renderLiveScan(); },50);
+}
+function syncSettingsUI(){
+  $("thRange").value=S.settings.leadTime; $("thVal").textContent=S.settings.leadTime;
+  $("glRange").value=S.settings.gradeLevel; $("glVal").textContent=gradeLevelTxt(S.settings.gradeLevel);
+  $("mgRange").value=S.settings.maxGap; $("mgVal").textContent=S.settings.maxGap;
+  $$(".switch").forEach(sw=>{ sw.querySelector(".toggle").classList.toggle("on",!!S.settings[sw.dataset.key]); });
+}
+function bindEvents(){
+  $("tabbar").addEventListener("click",e=>{ const b=e.target.closest(".tab"); if(b)switchTab(b.dataset.tab); });
+  $("bStart").onclick=()=>{ if(S.running)stopBot(); else startBot(); };
+  $("bRefresh").onclick=async()=>{ const sym=S.chartSymbol||[...S.selected][0]; if(!sym)return; try{ await fetchSymbol(sym,{skipCache:true,forceFetch:true,full:true}); drawChart(); renderStats(); toast("রিফ্রেশ","ok"); }catch(e){ log("e",e.message); } };
+  $("bRemine").onclick=()=>{ if(S.learnState.running){ toast("চলছে…","warn"); return; } if(!S.running){ toast("আগে চালু","warn"); return; } initialLoadAndMine().catch(e=>log("e",e.message)); };
+  $("bClearBackoff").onclick=()=>{ netReset(); toast("Backoff cleared","ok"); };
+  $("mSearch").oninput=e=>{ S.searchTerm=e.target.value; renderMarkets(); };
+  $("bSelectAll").onclick=()=>{ MARKETS.forEach(s=>S.selected.add(s)); renderMarkets(); saveState(); };
+  $("bDeselectAll").onclick=()=>{ S.selected.clear(); renderMarkets(); saveState(); };
+  $("thRange").oninput=e=>{ S.settings.leadTime=+e.target.value; $("thVal").textContent=S.settings.leadTime; };
+  $("thRange").onchange=saveState;
+  $("glRange").oninput=e=>{ S.settings.gradeLevel=+e.target.value; $("glVal").textContent=gradeLevelTxt(S.settings.gradeLevel); };
+  $("glRange").onchange=saveState;
+  $("mgRange").oninput=e=>{ S.settings.maxGap=+e.target.value; $("mgVal").textContent=S.settings.maxGap; };
+  $("mgRange").onchange=saveState;
+  $$(".switch").forEach(sw=>{ sw.onclick=()=>{
+    const k=sw.dataset.key; S.settings[k]=!S.settings[k]; sw.querySelector(".toggle").classList.toggle("on",S.settings[k]); saveState(); forceRender();
+    if(k==="usePeer"&&S.running&&!S.learnState.running){ S.rules={}; initialLoadAndMine().catch(()=>{}); }
+    if(k==="autoCalib"){ S.calib.dirty=true; }
+  }; });
+  $("biquoteUrl").onchange=e=>{ S.biquoteUrl=e.target.value.trim()||CFG.biquoteUrl; saveState(); };
+  $("bClearLog").onclick=()=>{ $("log").innerHTML=""; };
+  $("bClearHist").onclick=()=>{ if(!confirm("মুছবেন?"))return; S.signals=S.signals.filter(s=>s.phase!=="DONE"); S.calib.dirty=true; saveState(); renderStats(); renderHistory(); };
+  $("bClearAll").onclick=()=>{
+    if(!confirm("সব রিসেট?"))return;
+    S.signals=[]; S.current=null; S.queued=null; S.settling=[]; S.lastFireEntryAt=0; S.lastScan=null;
+    S.liveScan={phase:"—",done:0,total:0,pairs:{},ranked:[],at:0};
+    S.calib={cache:null,dirty:true,lastRebuild:0}; S.rules={};
+    netReset(); [SK.signals,SK.active,SK.calib].forEach(k=>localStorage.removeItem(k));
+    forceRender(); renderStats(); renderHistory(); renderScan();
+  };
+  $("bExport").onclick=()=>{
+    const done=S.signals.filter(s=>s.phase==="DONE"); if(!done.length){ toast("কিছু নেই","warn"); return; }
+    const h="time,symbol,direction,flipped,grade,forced,score,rawScore,calibAction,rule,ruleWR,ruleN,entry,exit,pips,outcome\n";
+    const rows=done.map(s=>[new Date(s.exitedAt||s.createdAt).toISOString(),s.symbol,s.direction,s.flipped?1:0,s.grade||"",s.forced?1:0,s.score,s.rawScore??"",s.calibAction||"",'"'+(s.rule||"")+'"',s.ruleWR!=null?(s.ruleWR*100).toFixed(1):"",s.ruleN||"",s.entryPrice??"",s.expiryPrice??"",(s.pips||0).toFixed(2),s.outcome].join(",")).join("\n");
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["\uFEFF"+h+rows],{type:"text/csv"})); a.download=`forex-r22-${new Date().toISOString().slice(0,10)}.csv`; a.click(); toast("CSV","ok");
+  };
+  document.addEventListener("visibilitychange",()=>{ if(document.hidden){ stopRender(); return; } startRender(); liveTick(); if(S.running){ startLoop(); forceRender(); } });
+}
+async function boot(){
+  log("i","🚀 R22 v"+VER+" — প্রতি ৫ মিনিটে সিগন্যাল");
+  loadState(); restoreActive();
+  $("biquoteUrl").value=S.biquoteUrl; syncSettingsUI();
+  initChart(); S.chartSymbol=[...S.selected][0]||null; if(S.current)S.chartSymbol=S.current.symbol;
+  renderMarkets(); forceRender(); renderStats(); renderHistory(); renderScan(); renderLiveScan(); renderCandleClock(Date.now()); updateNetUI();
+  bindEvents(); log("o","✅ প্রস্তুত — ▶ চালু করুন");
+  try{
+    const sym=S.chartSymbol||"EURUSD";
+    const bars=await fetchSymbol(sym,{skipCache:true,forceFetch:true});
+    log("o",`✅ ${sym}: ${bars.length} bars`);
+  }catch(e){ log("e","API: "+e.message); }
+  updateDataPill(); updateNetUI(); drawChart(); startRender();
+}
+if(typeof document!=="undefined"&&document.addEventListener)document.addEventListener("DOMContentLoaded",()=>boot().catch(e=>{ console.error(e); try{ log("e","boot: "+e.message); }catch(_){} }));
+</script>
+</body>
+</html>
