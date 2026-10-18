@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WinGo AI Pro — v43.0 (Market Shift AI)</title>
+<style>
+*{box-sizing:border-box}body{background:#0b1020;color:#fff;font-family:-apple-system,sans-serif;padding:10px;margin:0}
+h1{font-size:15px;text-align:center;margin:6px 0}
+.warning{background:rgba(248,113,113,0.1);border:1px solid #f87171;border-radius:6px;padding:8px;margin:6px 0;font-size:10px;color:#fca5a5}
+.err-banner{background:#7f1d1d;color:#fff;padding:8px;border-radius:6px;margin:6px 0;font-size:10px;font-family:monospace;display:none;word-break:break-all}
+.box{background:#0a0e1a;border-radius:8px;padding:10px;margin:6px 0;border:1px solid #222a44}
+.setup-title{font-size:12px;color:#4ade80;margin-bottom:8px;font-weight:bold}
+.live-title{font-size:11px;color:#facc15;font-weight:bold;margin-bottom:6px}
+.live-box{border-color:#facc15}
+.draws-preview{border-color:#22c55e}
+.draws-preview-title{font-size:11px;color:#22c55e;font-weight:bold;margin-bottom:6px;display:flex;justify-content:space-between}
+.setup-row{display:flex;gap:5px;margin-bottom:6px}
+.setup-input{flex:1;background:#11172b;border:1px solid #222a44;border-radius:5px;padding:8px;color:#fff;font-size:11px;font-family:monospace}
+.setup-btn{background:#4ade80;color:#0b1020;border:none;border-radius:5px;padding:8px 14px;font-size:11px;font-weight:bold;cursor:pointer}
+.setup-btn:active{transform:scale(0.96)}.setup-btn:disabled{opacity:0.5;cursor:not-allowed}
+.key-status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;margin-top:4px}
+.key-status.ok{background:rgba(74,222,128,0.2);color:#4ade80;border:1px solid #4ade80}
+.key-status.none{background:rgba(248,113,113,0.2);color:#f87171;border:1px solid #f87171}
+.live-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #1a2340;font-size:10px}
+.live-row:last-child{border-bottom:none}
+.live-label{color:#888}
+.live-value{font-weight:bold;color:#fff;font-family:monospace}
+.live-value.highlight{color:#4ade80}
+.draws-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;font-family:monospace;font-size:10px}
+.draw-item{background:#11172b;padding:4px;border-radius:4px;border:1px solid #222a44;text-align:center}
+.draw-period{color:#888;font-size:8px}
+.draw-num{font-weight:bold;font-size:13px}
+.draw-num.G{color:#4ade80}.draw-num.R{color:#f87171}.draw-num.V{color:#a78bfa}
+.big-timer{font-size:36px;font-weight:bold;text-align:center;color:#facc15;margin:8px 0;font-family:monospace;letter-spacing:2px}
+.big-timer.warning{color:#f87171;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+.main-box{background:radial-gradient(circle at center,#1a1f3a 0%,#0a0e1a 70%);border-radius:16px;padding:24px 14px;margin:10px 0;border:1px solid #3b82f6;text-align:center;box-shadow:0 0 40px rgba(59,130,246,0.15)}
+.main-label{font-size:11px;color:#60a5fa;letter-spacing:3px;margin-bottom:12px;text-transform:uppercase}
+.main-signal{font-size:76px;font-weight:900;line-height:1.05;letter-spacing:2px;padding:14px 8px;border-radius:14px;display:inline-block;min-width:260px;transition:all 0.3s}
+.main-signal.BIG{background:#1e63d6;box-shadow:0 0 40px rgba(30,99,214,0.7);color:#fff}
+.main-signal.SMALL{background:#8d2bd1;box-shadow:0 0 40px rgba(141,43,209,0.7);color:#fff}
+.main-signal.GREEN{background:#16a34a;box-shadow:0 0 40px rgba(22,163,74,0.7);color:#fff}
+.main-signal.RED{background:#dc2626;box-shadow:0 0 40px rgba(220,38,38,0.7);color:#fff}
+.main-signal.SKIP{background:#444;color:#aaa;font-size:56px}
+.main-signal.LOADING{background:#1e3a8a;color:#93c5fd;font-size:44px;animation:pulse 1.5s infinite}
+.main-sub{font-size:12px;color:#94a3b8;margin-top:12px;font-family:monospace;letter-spacing:1px}
+
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.mode-box{background:rgba(0,0,0,0.3);border-radius:8px;padding:8px;border:1px solid #1a2340}
+.mode-title{font-size:9px;color:#888;letter-spacing:1px;margin-bottom:4px}
+.mode-value{font-size:15px;font-weight:bold}
+
+.prob-row{display:flex;align-items:center;gap:10px;margin:14px 8px 6px}
+.prob-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px}
+.prob-bar{flex:1;height:12px;background:#11172b;border-radius:6px;overflow:hidden;border:1px solid #222a44}
+.prob-fill{height:100%;background:linear-gradient(90deg,#f87171,#facc15,#4ade80);transition:width 0.5s}
+.prob-num{font-size:16px;font-weight:bold;color:#4ade80;min-width:64px;text-align:right;font-family:monospace}
+
+.num-hint{margin-top:14px;padding:10px;background:rgba(0,0,0,0.35);border-radius:8px;border:1px solid #1a2340}
+.num-hint-title{font-size:9px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.num-hint-nums{font-family:monospace;font-size:22px;font-weight:bold;color:#facc15;letter-spacing:4px}
+
+.ai-reasoning{font-size:10px;color:#cbd5e1;text-align:left;background:rgba(0,0,0,0.4);border-radius:8px;padding:10px;margin-top:14px;line-height:1.6;max-height:240px;overflow-y:auto;white-space:pre-wrap;font-family:monospace;border:1px solid #1a2340}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:8px 0}
+.stat{background:#11172b;border-radius:6px;padding:7px 4px;border:1px solid #222a44;text-align:center}
+.stat-num{font-size:16px;font-weight:bold}
+.stat-num.green{color:#4ade80}.stat-num.red{color:#f87171}.stat-num.yellow{color:#facc15}.stat-num.blue{color:#60a5fa}
+.stat-lbl{font-size:8px;color:#888;margin-top:2px;letter-spacing:0.5px}
+.tabs{display:flex;margin:8px 0 4px 0}
+.tab{flex:1;padding:6px;background:#11172b;color:#888;border:1px solid #222a44;cursor:pointer;font-size:10px;border-radius:5px;margin:0 2px}
+.tab.active{background:#1e63d6;color:#fff;font-weight:bold}
+.panel{background:#11172b;border-radius:8px;padding:8px;margin:4px 0;text-align:left;max-height:420px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;background:#11172b;border-radius:6px;overflow:hidden}
+th,td{border:1px solid #222a44;padding:4px 3px;font-size:9px;text-align:center}
+th{background:#1a2340;color:#ddd}
+.WIN{color:#4ade80;font-weight:bold}.LOSS{color:#f87171;font-weight:bold}
+.SKIP_STATUS{color:#888;font-weight:bold}.WAIT{color:#facc15;font-weight:bold}
+.BIG{color:#60a5fa;font-weight:bold}.SMALL{color:#c084fc;font-weight:bold}
+.GREEN_TXT{color:#4ade80;font-weight:bold}.RED_TXT{color:#f87171;font-weight:bold}
+.log{font-size:9px;color:#666;font-family:monospace;padding:6px;max-height:300px;overflow-y:auto}
+.log-entry{padding:2px 0;border-bottom:1px solid #1a2340;word-break:break-all}
+.log-entry.good{color:#4ade80}.log-entry.warn{color:#facc15}.log-entry.bad{color:#f87171}.log-entry.info{color:#60a5fa}.log-entry.ai{color:#a78bfa}
+</style>
+</head>
+<body>
+<h1>🤖 WinGo AI Pro — v43.0 (Market Shift AI)</h1>
+<div id="err-banner" class="err-banner"></div>
+<div class="warning">⚠️ Educational only · Uniform RNG<br>🎯 Auto-detects if High% or Low% is winning and shifts mode</div>
+
+<div class="box">
+<div class="setup-title">🔑 Setup</div>
+<div class="setup-row"><input type="password" class="setup-input" id="api-key-input" placeholder="API key (optional)" /><button class="setup-btn" id="save-key-btn" type="button">Save</button></div>
+<div class="setup-row"><input type="text" class="setup-input" id="api-url-input" value="https://tokenharbor.ai/v1/chat/completions" /></div>
+<div class="setup-row"><input type="text" class="setup-input" id="api-model-input" value="deepseek-v4.1-flash:free" /></div>
+<div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap">
+<div id="key-status" class="key-status none">❌ No key</div>
+<button class="setup-btn" id="clear-btn" type="button" style="background:#f87171;color:#fff;font-size:10px;padding:5px 10px">🗑️ Clear Key</button>
+<button class="setup-btn" id="reset-btn" type="button" style="background:#a78bfa;color:#fff;font-size:10px;padding:5px 10px">🔄 Reset</button>
+<button class="setup-btn" id="raw-btn" type="button" style="background:#22d3ee;color:#000;font-size:10px;padding:5px 10px">🔬 Raw Live</button>
+<button class="setup-btn" id="force-verify-btn" type="button" style="background:#8b5cf6;color:#fff;font-size:10px;padding:5px 10px">✓ Force Verify</button>
+</div>
+</div>
+
+<div class="box live-box">
+<div class="live-title">📡 Live Info (Auto)</div>
+<div class="live-row"><span class="live-label">Previous</span><span class="live-value" id="live-prev">—</span></div>
+<div class="live-row"><span class="live-label">Prev #</span><span class="live-value" id="live-prev-num" style="color:#facc15">—</span></div>
+<div class="live-row"><span class="live-label">Current</span><span class="live-value highlight" id="live-curr">—</span></div>
+<div class="live-row"><span class="live-label">Target</span><span class="live-value" id="live-target" style="color:#a78bfa">—</span></div>
+<div class="live-row"><span class="live-label">Cached draws</span><span class="live-value highlight" id="live-cache">0</span></div>
+<div class="live-row"><span class="live-label">Last Result</span><span class="live-value" id="live-last-result" style="color:#facc15">—</span></div>
+<div class="live-row"><span class="live-label">Loss streak</span><span class="live-value" id="live-loss-streak" style="color:#f87171">0</span></div>
+<div class="live-row"><span class="live-label">Pending WAIT</span><span class="live-value" id="live-pending" style="color:#f87171">0</span></div>
+</div>
+
+<div class="box draws-preview">
+<div class="draws-preview-title"><span>📊 Live draws</span><span id="draws-count" style="color:#888">0</span></div>
+<div class="draws-grid" id="draws-grid"><div style="color:#666;grid-column:1/-1;text-align:center;padding:8px">Waiting...</div></div>
+</div>
+
+<div id="big-timer" class="big-timer">--:--.--</div>
+
+<div class="main-box">
+<div class="main-label">🎯 Market Shift Signal</div>
+<div id="main-signal" class="main-signal LOADING">…</div>
+<div class="main-sub" id="main-sub">computing…</div>
+
+<div class="mode-grid">
+  <div class="mode-box">
+    <div class="mode-title">MARKET MODE</div>
+    <div id="ui-mode" class="mode-value" style="color:#facc15">—</div>
+  </div>
+  <div class="mode-box">
+    <div class="mode-title">HIGH% RECENT WIN RATE</div>
+    <div id="ui-highrate" class="mode-value" style="color:#60a5fa">—</div>
+  </div>
+</div>
+
+<div class="prob-row">
+<span class="prob-label">Edge</span>
+<div class="prob-bar"><div class="prob-fill" id="prob-fill" style="width:0%"></div></div>
+<span class="prob-num" id="prob-num">—</span>
+</div>
+
+<div class="num-hint" id="num-hint" style="display:none">
+<div class="num-hint-title">সাজেস্টেড নাম্বার</div>
+<div class="num-hint-nums" id="num-hint-nums">—</div>
+</div>
+
+<div class="ai-reasoning" id="ai-reasoning">অ্যানালাইজিং...</div>
+
+<div style="margin-top:14px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+<button class="setup-btn" id="auto-toggle-btn" type="button" style="background:#4ade80;color:#0b1020">▶️ Start Auto</button>
+<button class="setup-btn" id="analyze-btn" type="button">🔮 Analyze Now</button>
+</div>
+</div>
+
+<div class="stats">
+<div class="stat"><div class="stat-num green" id="stat-win">0</div><div class="stat-lbl">WINS</div></div>
+<div class="stat"><div class="stat-num red" id="stat-loss">0</div><div class="stat-lbl">LOSSES</div></div>
+<div class="stat"><div class="stat-num blue" id="stat-skip">0</div><div class="stat-lbl">SKIPS</div></div>
+<div class="stat"><div class="stat-num yellow" id="stat-rate">—</div><div class="stat-lbl">Win Rate</div></div>
+</div>
+
+<div class="tabs"><div class="tab active" id="tab-history">History</div><div class="tab" id="tab-logs">Logs</div></div>
+<div id="panel-history" class="panel">
+<div style="display:flex;gap:5px;margin-bottom:6px">
+<button class="setup-btn" id="clear-history-btn" type="button" style="background:#f87171;color:#fff;font-size:9px;padding:4px 10px">🗑️ Clear History</button>
+<button class="setup-btn" id="clear-wait-btn" type="button" style="background:#facc15;color:#000;font-size:9px;padding:4px 10px">🧹 Clear WAIT</button>
+</div>
+<table><thead><tr><th>Period</th><th>Mode</th><th>Signal</th><th>Edge</th><th>Nums</th><th>Result</th></tr></thead><tbody id="history-body"></tbody></table>
+</div>
+<div id="panel-logs" class="panel" style="display:none"><div id="logs" class="log">...</div></div>
+
+<script>
+window.onerror=function(m,u,l,c){const b=document.getElementById('err-banner');if(b){b.style.display='block';b.textContent='⚠️ '+m+' @'+l+':'+c}return false};
+window.addEventListener('unhandledrejection',e=>{const b=document.getElementById('err-banner');if(b){b.style.display='block';b.textContent='⚠️ Async: '+(e.reason?.message||e.reason)}});
+
+const LIVE_API="https://draw.ar-lottery01.com/WinGo/WinGo_30S.json";
+const HIST_URL="https://draw.ar-lottery01.com/WinGo/WinGo_30S/GetHistoryIssuePage.json";
+const KEEP_HISTORY=300;
+const MIN_DRAWS=10;
+const POLL_MS=2500;
+const LIVE_TIMEOUT_MS=2500;
+const ROUND_MS=30000;
+const SIGNAL_TL_MAX=9;
+const SIGNAL_TL_MIN=1;
+
+const GREEN_NUMS=[1,3,5,7,9];
+const RED_NUMS=[0,2,4,6,8];
+
+const STATE_MAP = {
+  0:'SR', 1:'SG', 2:'SR', 3:'SG', 4:'SR',
+  5:'BG', 6:'BR', 7:'BG', 8:'BR', 9:'BG'
+};
+
+function toBS(n){return parseInt(n,10)>=5?'B':'S'}
+function primaryColor(n){
+  if(n===0) return 'R';
+  if(n===5) return 'G';
+  return GREEN_NUMS.includes(n) ? 'G' : 'R';
+}
+function safeBigInt(s){try{return BigInt(String(s).replace(/[^0-9]/g,''))}catch(e){return null}}
+function nextPeriodStr(p,step){try{return(BigInt(p)+BigInt(step||1)).toString()}catch(e){return p}}
+
+let draws=[],liveData=null,aiHistory=[],logs=[];
+let lastGoodData=[];
+let isAnalyzing=false,autoPredictEnabled=false,lastPredictionPeriod=null;
+let lastResult=null,lossStreak=0,winStreak=0;
+
+function storageGet(k){try{const v=localStorage.getItem(k);if(v!==null)return v}catch(e){}try{return sessionStorage.getItem(k)}catch(e){return null}}
+function storageSet(k,v){let ok=false;try{localStorage.setItem(k,v);ok=(localStorage.getItem(k)===v)}catch(e){}if(ok)return true;try{sessionStorage.setItem(k,v);return true}catch(e){return false}}
+function storageRemove(k){try{localStorage.removeItem(k)}catch(e){}try{sessionStorage.removeItem(k)}catch(e){}}
+
+function loadSetup(){
+try{
+const h=storageGet('w43_hist');if(h)aiHistory=JSON.parse(h);
+const c=storageGet('w43_cache');if(c){const p=JSON.parse(c);if(Array.isArray(p))lastGoodData=p}
+const st=storageGet('w43_state');if(st){const s=JSON.parse(st);lastResult=s.lastResult||null;lossStreak=s.lossStreak||0;winStreak=s.winStreak||0}
+}catch(e){console.error(e)}
+}
+function saveState(){storageSet('w43_state',JSON.stringify({lastResult,lossStreak,winStreak}))}
+function saveHistory(){storageSet('w43_hist',JSON.stringify(aiHistory.slice(0,100)))}
+function saveCache(){if(lastGoodData)storageSet('w43_cache',JSON.stringify(lastGoodData.slice(0,800)))}
+
+function addLog(m,t){
+logs.unshift({time:new Date().toLocaleTimeString(),msg:String(m),type:t||'info'});
+if(logs.length>200)logs=logs.slice(0,200);
+const el=document.getElementById('logs');if(!el)return;
+el.textContent='';
+for(const l of logs.slice(0,80)){const d=document.createElement('div');d.className='log-entry '+l.type;d.textContent='['+l.time+'] '+l.msg;el.appendChild(d)}
+}
+function resetState(){if(!confirm('Reset?'))return;lossStreak=0;winStreak=0;lastResult=null;saveState();updateLastResultUI();addLog('🔄 Reset','warn')}
+
+/* ═══════════ CORE PATTERN ENGINE ═══════════ */
+function calculatePatterns(chrono, targetPeriodStr) {
+  const L = chrono.length;
+  if (L < 3) return null;
+  const targetDigit = String(targetPeriodStr).slice(-1);
+  
+  const states = chrono.map(d => STATE_MAP[d.num]);
+  const bsArr = chrono.map(d => d.bs);
+  const colArr = chrono.map(d => primaryColor(d.num));
+  
+  let stateVotes = { SG: 1, SR: 1, BG: 1, BR: 1 };
+  let bsVotes = { B: 1, S: 1 };
+  let colVotes = { G: 1, R: 1 };
+
+  const last2 = states.slice(-2).join('-');
+  const last3 = states.slice(-3).join('-');
+  const last2BS = bsArr.slice(-2).join('');
+  const last3BS = bsArr.slice(-3).join('');
+  const last2Col = colArr.slice(-2).join('');
+  const last3Col = colArr.slice(-3).join('');
+
+  // Look back up to 50 draws for patterns
+  const lookback = Math.min(L - 1, 50); 
+  const startIdx = L - lookback;
+
+  for (let i = startIdx; i < L; i++) {
+    if (i >= 2 && states.slice(i-2, i).join('-') === last2) stateVotes[states[i]] += 2.0;
+    if (i >= 3 && states.slice(i-3, i).join('-') === last3) stateVotes[states[i]] += 3.0;
+    
+    if (i >= 2 && bsArr.slice(i-2, i).join('') === last2BS) bsVotes[bsArr[i]] += 1.5;
+    if (i >= 3 && bsArr.slice(i-3, i).join('') === last3BS) bsVotes[bsArr[i]] += 2.0;
+    
+    if (i >= 2 && colArr.slice(i-2, i).join('') === last2Col) colVotes[colArr[i]] += 1.5;
+    if (i >= 3 && colArr.slice(i-3, i).join('') === last3Col) colVotes[colArr[i]] += 2.0;
+  }
+
+  // Period digit pattern
+  for (let i = 0; i < L; i++) {
+    if (String(chrono[i].period).slice(-1) === targetDigit) {
+      stateVotes[states[i]] += 1.5;
+      bsVotes[bsArr[i]] += 1.0;
+      colVotes[colArr[i]] += 1.0;
+    }
+  }
+
+  const topState = Object.keys(stateVotes).sort((a,b)=>stateVotes[b]-stateVotes[a])[0];
+  if (topState === 'BG') { bsVotes.B += 2; colVotes.G += 2; }
+  else if (topState === 'SG') { bsVotes.S += 2; colVotes.G += 2; }
+  else if (topState === 'BR') { bsVotes.B += 2; colVotes.R += 2; }
+  else if (topState === 'SR') { bsVotes.S += 2; colVotes.R += 2; }
+
+  const bsSum = bsVotes.B + bsVotes.S;
+  const pB = bsVotes.B / bsSum;
+  const pS = bsVotes.S / bsSum;
+  const edgeBS = Math.abs(pB - pS) * 100;
+
+  const colSum = colVotes.G + colVotes.R;
+  const pG = colVotes.G / colSum;
+  const pR = colVotes.R / colSum;
+  const edgeCol = Math.abs(pG - pR) * 100;
+
+  let type, highPick, lowPick, edge;
+  if (edgeBS >= edgeCol) {
+    type = 'BS';
+    highPick = pB > pS ? 'BIG' : 'SMALL';
+    lowPick = pB > pS ? 'SMALL' : 'BIG';
+    edge = edgeBS;
+  } else {
+    type = 'COLOR';
+    highPick = pG > pR ? 'GREEN' : 'RED';
+    lowPick = pG > pR ? 'RED' : 'GREEN';
+    edge = edgeCol;
+  }
+  
+  return { type, highPick, lowPick, edge };
+}
+
+async function makePrediction(manual){
+if(isAnalyzing)return;
+if(!draws||draws.length<MIN_DRAWS){if(manual)alert(MIN_DRAWS+'+ draws দরকার');return}
+const tl=getTimeLeft();
+if(!manual&&(tl>SIGNAL_TL_MAX||tl<SIGNAL_TL_MIN))return;
+const targetPeriod=getTargetPeriod();
+if(!targetPeriod){if(manual)alert('No target');return}
+if(!manual&&lastPredictionPeriod===String(targetPeriod))return;
+if(!manual&&aiHistory.some(h=>String(h.period)===String(targetPeriod)))return;
+
+aiHistory=aiHistory.filter(h=>String(h.period)!==String(targetPeriod));
+isAnalyzing=true;
+document.getElementById('analyze-btn').disabled=true;
+setMain(null,'loading');
+
+const chrono = draws.slice().reverse();
+const L = chrono.length;
+
+// 1. Evaluate Recent Performance (Last 10 rounds)
+let highWins = 0, highTotal = 0, recentResStr = [];
+const checkLength = Math.min(10, L - 5);
+for (let i = L - checkLength; i < L; i++) {
+    const hist = chrono.slice(0, i);
+    const tPeriod = chrono[i].period;
+    const pastPred = calculatePatterns(hist, tPeriod);
+    if (pastPred) {
+        highTotal++;
+        let isWin = false;
+        const actBS = chrono[i].bs;
+        const actCol = primaryColor(chrono[i].num);
+        
+        if (pastPred.highPick === 'BIG' && actBS === 'B') isWin = true;
+        else if (pastPred.highPick === 'SMALL' && actBS === 'S') isWin = true;
+        else if (pastPred.highPick === 'GREEN' && actCol === 'G') isWin = true;
+        else if (pastPred.highPick === 'RED' && actCol === 'R') isWin = true;
+
+        if (isWin) { highWins++; recentResStr.push('W'); }
+        else { recentResStr.push('L'); }
+    }
+}
+
+const highRate = highTotal > 0 ? highWins / highTotal : 0.5;
+
+// 2. Current Prediction
+const currentPred = calculatePatterns(chrono, targetPeriod);
+if(!currentPred) {
+    isAnalyzing=false; document.getElementById('analyze-btn').disabled=false;
+    if(manual) alert('Pattern fail');
+    return;
+}
+
+// 3. Detect Shift & Choose Final Signal
+let marketMode = 'TREND';
+let finalPick = currentPred.highPick;
+
+// If High % is winning less than 45%, the Low % is actually winning! Shift!
+if (highRate < 0.45) {
+    marketMode = 'CONTRARIAN';
+    finalPick = currentPred.lowPick;
+}
+
+// 4. Threshold & Skip Logic
+const threshold = 2 + Math.min(4, lossStreak * 1.5); 
+const skip = currentPred.edge < threshold;
+
+// 5. Suggest Numbers
+let nums = [];
+if (!skip) {
+  let pool = [];
+  if (finalPick === 'BIG') pool = [5,6,7,8,9];
+  else if (finalPick === 'SMALL') pool = [0,1,2,3,4];
+  else if (finalPick === 'GREEN') pool = [1,3,5,7,9];
+  else if (finalPick === 'RED') pool = [0,2,4,6,8];
+  
+  const numFreq = {};
+  for (let i = 0; i < L; i++) {
+    const w = Math.pow(0.95, L - 1 - i);
+    numFreq[chrono[i].num] = (numFreq[chrono[i].num] || 0) + w;
+  }
+  nums = pool.sort((a,b) => (numFreq[b]||0) - (numFreq[a]||0)).slice(0, 3);
+}
+
+// 6. Build Reasoning
+let reasoning = '★ MARKET SHIFT AI v43.0\n';
+reasoning += '───────────────\n';
+reasoning += 'Recent High% Results: ' + recentResStr.join(' ') + '\n';
+reasoning += 'High% Win Rate: ' + (highRate*100).toFixed(0) + '% (' + highWins + '/' + highTotal + ')\n';
+reasoning += 'Market Mode: ' + (marketMode === 'TREND' ? 'TREND (High% wins)' : 'CONTRARIAN (Low% wins)') + '\n';
+reasoning += '───────────────\n';
+reasoning += 'Pattern Top Pick: ' + currentPred.highPick + ' (Edge ' + currentPred.edge.toFixed(1) + '%)\n';
+reasoning += 'Pattern Low Pick: ' + currentPred.lowPick + '\n';
+reasoning += '───────────────\n';
+reasoning += 'FINAL SIGNAL: ' + (skip ? 'SKIP' : finalPick + ' (' + marketMode + ')') + '\n';
+reasoning += 'Numbers: ' + (nums.length ? nums.join(', ') : '—') + '\n';
+reasoning += 'draws = ' + draws.length + ' | lossStreak = ' + lossStreak;
+
+const result = {
+  signal: skip ? 'SKIP' : finalPick,
+  edge: currentPred.edge,
+  type: currentPred.type,
+  mode: marketMode,
+  highRate: (highRate * 100).toFixed(0),
+  nums: skip ? [] : nums,
+  reasoning: reasoning
+};
+
+setMain(result);
+lastPredictionPeriod=String(targetPeriod);
+aiHistory.unshift({
+  period: targetPeriod,
+  signal: result.signal,
+  edge: result.edge,
+  type: result.type,
+  mode: result.mode,
+  highRate: result.highRate,
+  nums: result.nums,
+  reasoning: result.reasoning,
+  status: result.signal === 'SKIP' ? 'SKIP' : 'WAIT',
+  actualNum: null,
+  result: null
+});
+if(aiHistory.length>KEEP_HISTORY)aiHistory=aiHistory.slice(0,KEEP_HISTORY);
+saveHistory();renderHistory();renderStats();updatePendingUI();
+addLog((result.signal==='SKIP'?'⏸️ SKIP':('🎯 '+result.signal))+' ['+result.mode+'] @ '+targetPeriod.slice(-5)+' edge='+result.edge.toFixed(1)+'%', result.signal==='SKIP'?'warn':'good');
+isAnalyzing=false;
+document.getElementById('analyze-btn').disabled=false;
+}
+
+function getTimeLeft(){
+if(liveData?.current?.endTime){const left=Math.floor((liveData.current.endTime-Date.now())/1000);if(left>=0&&left<=ROUND_MS/1000)return left}
+const now=Date.now();const secIntoRound=(now/1000)%(ROUND_MS/1000);
+return Math.max(0,Math.floor((ROUND_MS/1000)-secIntoRound));
+}
+function getTargetPeriod(){
+if(lastGoodData&&lastGoodData.length>0)return nextPeriodStr(lastGoodData[0].period,1);
+if(liveData?.current?.issueNumber)return liveData.current.issueNumber;
+return null;
+}
+function getCurrentPeriod(){if(liveData?.current?.issueNumber)return liveData.current.issueNumber;return getTargetPeriod()}
+function getPreviousInfo(){
+if(lastGoodData&&lastGoodData.length>0)return lastGoodData[0];
+if(liveData?.previous){const n=liveData.previous.number;if(n!=null){const ni=parseInt(n,10);if(!isNaN(ni))return{period:liveData.previous.issueNumber,num:ni,bs:toBS(ni)}}}
+return null;
+}
+
+function renderLive(){
+const el=id=>document.getElementById(id);
+const prev=getPreviousInfo();const curr=getCurrentPeriod();const target=getTargetPeriod();
+el('live-prev').textContent=prev?.period?.slice(-8)||'—';
+el('live-prev-num').textContent=prev&&prev.num!=null?(prev.num+' ('+toBS(prev.num)+' '+primaryColor(prev.num)+')'):'—';
+el('live-curr').textContent=curr?.slice(-8)||'—';
+el('live-target').textContent=target?.slice(-8)||'—';
+el('live-cache').textContent=(lastGoodData?.length||0);
+const ls=el('live-loss-streak');
+if(ls){ls.textContent=lossStreak;ls.style.color=lossStreak>=3?'#f87171':lossStreak>=1?'#facc15':'#4ade80'}
+updateLastResultUI();renderDrawsPreview();updatePendingUI();
+}
+function updatePendingUI(){const w=aiHistory.filter(h=>h.status==='WAIT').length;const el=document.getElementById('live-pending');if(el){el.textContent=w;el.style.color=w>0?'#f87171':'#4ade80'}}
+function renderDrawsPreview(){
+const grid=document.getElementById('draws-grid');const count=document.getElementById('draws-count');
+if(!grid||!count)return;
+if(!lastGoodData||lastGoodData.length===0){count.textContent='0';grid.innerHTML='<div style="color:#666;grid-column:1/-1;text-align:center;padding:8px">Waiting...</div>';return}
+count.textContent=lastGoodData.length+' draws';
+grid.innerHTML=lastGoodData.slice(0,10).map(d=>{
+const pc=primaryColor(d.num);const cls=pc==='G'?'G':pc==='R'?'R':'V';
+return'<div class="draw-item"><div class="draw-period">'+d.period.slice(-4)+'</div><div class="draw-num '+cls+'">'+d.num+'</div></div>';
+}).join('');
+}
+function renderBigTimer(){
+const el=document.getElementById('big-timer');
+const leftMs=(()=>{if(liveData?.current?.endTime){const l=liveData.current.endTime-Date.now();if(l>0&&l<ROUND_MS+1000)return l}const now=Date.now();return ROUND_MS-(now%ROUND_MS)})();
+if(leftMs<=0){el.textContent='00:00.00';el.className='big-timer warning';return}
+const s=Math.floor(leftMs/1000),ms=Math.floor(leftMs%1000/10);
+el.textContent='00:'+String(s).padStart(2,'0')+'.'+String(ms).padStart(2,'0');
+el.className='big-timer'+(s<10?' warning':'');
+}
+
+function setMain(result,status){
+const sigEl=document.getElementById('main-signal');
+const subEl=document.getElementById('main-sub');
+const probFill=document.getElementById('prob-fill');
+const probNum=document.getElementById('prob-num');
+const numHint=document.getElementById('num-hint');
+const numHintNums=document.getElementById('num-hint-nums');
+const reasoningEl=document.getElementById('ai-reasoning');
+const uiMode=document.getElementById('ui-mode');
+const uiRate=document.getElementById('ui-highrate');
+
+if(status==='loading'){
+sigEl.textContent='…';sigEl.className='main-signal LOADING';
+subEl.textContent='computing…';
+probFill.style.width='0%';probNum.textContent='—';
+numHint.style.display='none';reasoningEl.textContent='Predicting…';
+uiMode.textContent='—';uiMode.style.color='#facc15';
+uiRate.textContent='—';uiRate.style.color='#60a5fa';
+return;
+}
+if(!result){sigEl.textContent='—';sigEl.className='main-signal';return}
+
+if(result.signal === 'SKIP'){
+sigEl.textContent='SKIP';sigEl.className='main-signal SKIP';
+subEl.textContent='edge too low (need ' + (2 + Math.min(4, lossStreak * 1.5)).toFixed(1) + '%)';
+numHint.style.display='none';
+}else{
+sigEl.textContent=result.signal;
+sigEl.className='main-signal ' + result.signal;
+subEl.textContent='type = ' + result.type + ' · edge ' + result.edge.toFixed(1) + '%';
+if(result.nums && result.nums.length){
+  numHint.style.display='block';
+  numHintNums.textContent=result.nums.join(' · ');
+} else numHint.style.display='none';
+}
+
+uiMode.textContent = result.mode;
+uiMode.style.color = result.mode === 'TREND' ? '#4ade80' : '#f87171';
+uiRate.textContent = result.highRate + '%';
+
+probFill.style.width=Math.min(100,result.edge*3)+'%';
+probNum.textContent=result.edge.toFixed(1)+'%';
+reasoningEl.textContent=result.reasoning;
+}
+
+function renderStats(){
+let w=0,l=0,s=0;
+for(const h of aiHistory){if(h.status==='WIN')w++;else if(h.status==='LOSS')l++;else if(h.status==='SKIP')s++}
+document.getElementById('stat-win').textContent=w;
+document.getElementById('stat-loss').textContent=l;
+document.getElementById('stat-skip').textContent=s;
+const tot=w+l;const r=document.getElementById('stat-rate');
+r.textContent=tot>0?Math.round(w/tot*100)+'%':'—';
+}
+function renderHistory(){
+document.getElementById('history-body').innerHTML=aiHistory.slice(0,25).map(h=>{
+const pick=h.signal||'—';
+let pickCls='SKIP_STATUS';
+if(pick==='BIG')pickCls='BIG';else if(pick==='SMALL')pickCls='SMALL';
+else if(pick==='GREEN')pickCls='GREEN_TXT';else if(pick==='RED')pickCls='RED_TXT';
+const edge=h.edge!=null?h.edge.toFixed(1)+'%':'—';
+const nums=h.nums&&h.nums.length?h.nums.join(','):'—';
+const modeStr = h.mode === 'TREND' ? '<span style="color:#4ade80">TREND</span>' : '<span style="color:#f87171">CONTRARIAN</span>';
+let statCls='WAIT',label='WAIT';
+if(h.status==='WIN'){statCls='WIN';label='✓ WIN'}
+else if(h.status==='LOSS'){statCls='LOSS';label='✗ LOSS'}
+else if(h.status==='SKIP'){statCls='SKIP_STATUS';label='SKIP'}
+return'<tr><td>'+h.period.slice(-5)+'</td><td style="font-size:8px">'+modeStr+'</td><td class="'+pickCls+'">'+pick+'</td><td>'+edge+'</td><td style="font-size:8px;color:#facc15">'+nums+'</td><td class="'+statCls+'">'+label+'</td></tr>';
+}).join('')||'<tr><td colspan="6" style="color:#666;padding:12px">No predictions</td></tr>';
+}
+function updateLastResultUI(){const el=document.getElementById('live-last-result');if(el){el.textContent=lastResult||'—';el.style.color=lastResult==='LOSS'?'#f87171':(lastResult==='WIN'?'#4ade80':'#facc15')}}
+
+function resolveOneWait(entry,live){
+const period=String(entry.period);
+let num=null;
+if(lastGoodData?.length){const d=lastGoodData.find(x=>String(x.period)===period);if(d)num=d.num}
+if(num==null&&live?.previous&&String(live.previous.issueNumber||'')===period){
+const pn=live.previous.number;
+if(pn!=null){const n=parseInt(pn,10);if(!isNaN(n))num=n}
+}
+if(num==null)return false;
+
+entry.actualNum=num;
+
+if(entry.status==='SKIP'||entry.signal==='SKIP'){
+entry.status='SKIP';
+addLog('⏸️ SKIP P'+period.slice(-5)+' actual='+num,'warn');
+return true;
+}
+
+const actualBS = toBS(num);
+const actualCol = primaryColor(num);
+let win=false;
+
+if(entry.signal==='BIG') win=(actualBS==='B');
+else if(entry.signal==='SMALL') win=(actualBS==='S');
+else if(entry.signal==='GREEN') win=(actualCol==='G');
+else if(entry.signal==='RED') win=(actualCol==='R');
+
+if(win){
+entry.status='WIN';winStreak++;lossStreak=0;lastResult='WIN';
+addLog('🎯 WIN P'+period.slice(-5)+' ['+entry.mode+'] pick='+entry.signal+' actual='+num,'good');
+}else{
+entry.status='LOSS';lossStreak++;winStreak=0;lastResult='LOSS';
+addLog('❌ LOSS P'+period.slice(-5)+' ['+entry.mode+'] pick='+entry.signal+' actual='+num+' streak='+lossStreak,'bad');
+}
+return true;
+}
+function tickResolve(live){
+const waits=aiHistory.filter(h=>h.status==='WAIT');
+if(waits.length===0)return false;
+let changed=false;
+for(const e of waits){if(resolveOneWait(e,live))changed=true}
+if(changed){saveHistory();renderHistory();renderStats();updateLastResultUI();updatePendingUI();saveState()}
+return changed;
+}
+function ageOutWait(){
+const curP=getCurrentPeriod();const currBi=curP?safeBigInt(curP):null;
+if(!currBi)return;
+let changed=false;
+for(const e of aiHistory){
+if(e.status!=='WAIT')continue;
+const eBi=safeBigInt(e.period);
+if(eBi&&(currBi-eBi)>15n){e.status='SKIP';changed=true}
+}
+if(changed){saveHistory();renderHistory();renderStats();updatePendingUI()}
+}
+
+function parseRecords(data){
+try{
+let list=data?.data?.list||data?.data;
+if(!Array.isArray(list))return null;
+const parsed=list.filter(x=>x&&(x.issueNumber||x.IssueNumber)&&(x.number!==undefined||x.Number!==undefined))
+.map(x=>{const p=String(x.issueNumber||x.IssueNumber);const n=parseInt(x.number!==undefined?x.number:x.Number,10);return{period:p,num:n,bs:toBS(n),color:primaryColor(n)}})
+.filter(x=>!isNaN(x.num)&&x.period.length>5);
+return parsed.length?parsed:null;
+}catch(e){return null}
+}
+async function fetchHistoryDirect(){
+const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),LIVE_TIMEOUT_MS);
+try{const r=await fetch(HIST_URL+'?pageNo=1&pageSize=50&ts='+Date.now(),{cache:'no-store',signal:ctl.signal,headers:{'Cache-Control':'no-cache'}});clearTimeout(t);if(!r.ok)return null;return parseRecords(await r.json())}catch(e){clearTimeout(t);return null}
+}
+async function fetchLive(){
+const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),LIVE_TIMEOUT_MS);
+try{const r=await fetch(LIVE_API+'?r='+Math.random().toString(36).slice(2)+'&t='+Date.now(),{cache:'no-store',signal:ctl.signal,headers:{'Cache-Control':'no-cache'}});clearTimeout(t);return r.ok?await r.json():null}catch(e){clearTimeout(t);return null}
+}
+function mergeIntoCache(items){
+if(!Array.isArray(items)||!items.length)return 0;
+const m=new Map();
+(lastGoodData||[]).forEach(x=>m.set(x.period,x));
+let added=0;
+items.forEach(x=>{if(!m.has(x.period))added++;m.set(x.period,x)});
+lastGoodData=Array.from(m.values()).sort((a,b)=>{
+const ba=safeBigInt(a.period),bb=safeBigInt(b.period);
+if(!ba||!bb)return 0;return bb>ba?1:-1;
+}).slice(0,800);
+saveCache();draws=lastGoodData;
+return added;
+}
+
+async function tick(){
+try{
+const[live,hist]=await Promise.all([fetchLive(),fetchHistoryDirect()]);
+let addedNow=0;
+if(hist&&hist.length>0)addedNow+=mergeIntoCache(hist);
+if(live){
+liveData=live;
+const prev=live.previous;
+if(prev?.issueNumber&&prev.number!=null){
+const p=String(prev.issueNumber);const n=parseInt(prev.number,10);
+if(!isNaN(n))addedNow+=mergeIntoCache([{period:p,num:n,bs:toBS(n),color:primaryColor(n)}]);
+}
+}
+if(addedNow>0)addLog('📥 +'+addedNow+' draw(s) — total '+lastGoodData.length,'good');
+renderLive();
+renderBigTimer();
+tickResolve(liveData);
+ageOutWait();
+const targetPeriod=getTargetPeriod();
+const tl=getTimeLeft();
+if(autoPredictEnabled&&!isAnalyzing&&targetPeriod&&draws.length>=MIN_DRAWS){
+const has=aiHistory.some(h=>String(h.period)===String(targetPeriod));
+if(!has&&tl<=SIGNAL_TL_MAX&&tl>=SIGNAL_TL_MIN){
+addLog('🚀 Signal @ '+targetPeriod.slice(-5)+' | tl='+tl+'s','good');
+makePrediction(false);
+}
+}
+}catch(e){console.error('tick:',e)}
+}
+async function rawLiveDump(){const live=await fetchLive();if(!live){alert('Failed');return}alert(JSON.stringify(live,null,2).slice(0,2500))}
+function clearHistory(){if(!confirm('Clear history?'))return;aiHistory=[];lossStreak=0;winStreak=0;lastResult=null;saveHistory();saveState();renderHistory();renderStats();updateLastResultUI();updatePendingUI();renderLive()}
+function clearWaitOnly(){aiHistory=aiHistory.filter(h=>h.status!=='WAIT');saveHistory();renderHistory();renderStats();updatePendingUI()}
+async function forceVerify(){const live=await fetchLive();if(live)liveData=live;const d=await fetchHistoryDirect();if(d)mergeIntoCache(d);tickResolve(liveData);renderLive()}
+function switchTab(name){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.style.display='none');document.getElementById('tab-'+name).classList.add('active');document.getElementById('panel-'+name).style.display='block'}
+
+function attachEvents(){
+const on=(id,ev,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener(ev,fn)};
+on('save-key-btn','click',()=>{alert('Optional, no key needed')});
+on('clear-btn','click',()=>{alert('Optional')});
+on('reset-btn','click',resetState);
+on('raw-btn','click',rawLiveDump);
+on('force-verify-btn','click',forceVerify);
+on('clear-history-btn','click',clearHistory);
+on('clear-wait-btn','click',clearWaitOnly);
+on('analyze-btn','click',()=>makePrediction(true));
+on('tab-history','click',()=>switchTab('history'));
+on('tab-logs','click',()=>switchTab('logs'));
+on('auto-toggle-btn','click',()=>{
+autoPredictEnabled=!autoPredictEnabled;
+const btn=document.getElementById('auto-toggle-btn');
+if(autoPredictEnabled){btn.textContent='⏹️ Stop Auto';btn.style.background='#f87171';btn.style.color='#fff';addLog('▶️ Auto ON','good')}
+else{btn.textContent='▶️ Start Auto';btn.style.background='#4ade80';btn.style.color='#0b1020';addLog('⏹️ Auto OFF','warn')}
+});
+}
+
+function boot(){
+try{
+attachEvents();loadSetup();
+addLog('🚀 v43.0 Market Shift AI booting','info');
+addLog('🎯 Tracks High% wins. Switches to Low% when losing.','info');
+renderStats();renderHistory();updateLastResultUI();renderDrawsPreview();updatePendingUI();
+setInterval(renderBigTimer,50);
+tick();
+setInterval(tick,POLL_MS);
+}catch(e){document.getElementById('err-banner').style.display='block';document.getElementById('err-banner').textContent='Boot: '+e.message}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
+else boot();
+</script>
+</body>
+</html>
